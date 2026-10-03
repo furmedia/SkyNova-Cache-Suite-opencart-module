@@ -1,0 +1,5 @@
+{
+    "scope": "own isolated loopback MySQL",
+    "assertions": 22,
+    "passed": true
+}

@@ -1,0 +1,44 @@
+{
+  "environment": "Loopback PHP 8.3.32 built-in server, MySQL 8.4.3, OpenCart 3.0.5.1 default theme; native Journal hooks installed, Journal storefront not active",
+  "baseline": {
+    "requests": 12,
+    "median_response_ms": 222.21,
+    "min_ms": 201.34,
+    "max_ms": 239.79,
+    "cache_statuses": [
+      "disabled",
+      "disabled",
+      "disabled",
+      "disabled",
+      "disabled",
+      "disabled",
+      "disabled",
+      "disabled",
+      "disabled",
+      "disabled",
+      "disabled",
+      "disabled"
+    ]
+  },
+  "cache": {
+    "requests": 12,
+    "median_response_ms": 89.29,
+    "min_ms": 74.78,
+    "max_ms": 124.86,
+    "cache_statuses": [
+      "HIT",
+      "HIT",
+      "HIT",
+      "HIT",
+      "HIT",
+      "HIT",
+      "HIT",
+      "HIT",
+      "HIT",
+      "HIT",
+      "HIT",
+      "HIT"
+    ]
+  },
+  "note": "Sequential warm requests; local HTTP total response, not field TTFB/LCP or production promise."
+}

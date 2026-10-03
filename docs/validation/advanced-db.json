@@ -1,0 +1,31 @@
+{
+    "scope": "own loopback MySQL 8.4.3 fixture",
+    "checks": [
+        "fixture table absent product",
+        "fixture table absent cart",
+        "fixture table absent customer_activity",
+        "fixture table absent customer_search",
+        "fixture table absent session",
+        "table inventory scoped to prefix",
+        "real read-only EXPLAIN",
+        "real ANALYZE selected table",
+        "real OPTIMIZE selected table",
+        "scheduled ANALYZE runs once",
+        "scheduled ANALYZE daily limit",
+        "page purge preserves DB daily schedule",
+        "conversion backup contains original rows",
+        "real MyISAM conversion",
+        "retention preview cart",
+        "backup precedes retention cart",
+        "retention preview activity",
+        "backup precedes retention activity",
+        "retention preview search",
+        "backup precedes retention search",
+        "retention preview session",
+        "backup precedes retention session",
+        "retention keeps logged-in and recent carts",
+        "retention keeps active sessions",
+        "real SQL profile anonymizes literal"
+    ],
+    "count": 25
+}

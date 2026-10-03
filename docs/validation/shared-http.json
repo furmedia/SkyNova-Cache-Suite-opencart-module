@@ -1,0 +1,19 @@
+{
+  "checks": [
+    "two independent native visitors render",
+    "first shared page miss",
+    "different session hits shared page: HIT",
+    "visitors retain separate native session cookies",
+    "native header/footer reassembled",
+    "edge never receives public personalized response",
+    "unknown cookie switches to private namespace",
+    "native product added to one cart",
+    "occupied cart bypasses shared cache",
+    "second visitor does not inherit cart",
+    "selective route invalidation from admin",
+    "selective purge reaches shared namespace"
+  ],
+  "environment": "isolated OC3.0.5.1 default theme",
+  "timestamp": "2026-10-03T12:46:38Z",
+  "production_changed": false
+}

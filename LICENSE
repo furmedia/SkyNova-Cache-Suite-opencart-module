@@ -1,0 +1,9 @@
+SkyNova Cache Suite 0.2.0 — development preview
+
+Copyright (c) 2026 FurMedia. All rights reserved for original project code.
+Delivered as editable source to the commissioning project owner.
+Public distribution and commercial licensing terms have not been finalized.
+
+Bundled third-party components remain governed by their original MIT licenses:
+src/core/vendor/minify/LICENSE and src/core/vendor/path-converter/LICENSE.
+See docs/THIRD-PARTY.md and the actual license files in each vendor directory.

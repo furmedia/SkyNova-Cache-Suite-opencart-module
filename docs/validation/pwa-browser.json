@@ -1,0 +1,11 @@
+{
+  "scope": "own isolated loopback worker fixture",
+  "count": 5,
+  "checks": [
+    "Public immutable asset fetched",
+    "Private account and checkout excluded",
+    "Generated asset available offline",
+    "Checkout remains network dependent",
+    "Other extension cache preserved during epoch change"
+  ]
+}

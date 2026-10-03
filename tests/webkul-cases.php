@@ -1,0 +1,38 @@
+<?php
+use FurMedia\Cache\Settings;
+use FurMedia\Cache\FileStore;
+$moduleJson='{"extension/module/featured":{"enabled":true,"ttl":120,"instances":{"module:12":{"ttl":20},"module:13":{"enabled":false}}}}';
+$rule=FurMedia\Cache\ModuleRules::resolve($moduleJson,'extension/module/featured',array(array('module_id'=>12)),60);
+check($rule['ttl']===20&&$rule['enabled']&&$rule['tag']==='module:extension/module/featured:module:12','module instance TTL and tag override');
+check(!FurMedia\Cache\ModuleRules::resolve($moduleJson,'extension/module/featured',array(array('module_id'=>13)),60)['enabled'],'individual module instance can be disabled');
+check(FurMedia\Cache\ModuleRules::resolve($moduleJson,'extension/module/featured',array(),60)['ttl']===120,'module route default TTL');
+$failed=false;try{FurMedia\Cache\ModuleRules::parse('{"extension/module/cart":{"enabled":true}}');}catch(Exception $e){$failed=true;}check($failed,'sensitive module rule rejected');
+check(count(FurMedia\Cache\ModuleRules::presets(true))===9,'nine native module presets including OC4 route family');
+$delivery=Settings::normalize(array('prefetch_urls'=>'/catalog/view/a.css','preload_urls'=>'/catalog/view/font.woff2|font','quality'=>0,'browser_css'=>120));
+check($delivery['quality']===0&&Settings::normalize(array('quality'=>100))['quality']===100,'image quality supports zero and one hundred');
+check(strpos(FurMedia\Cache\Delivery::hints($delivery),'as="font" crossorigin')!==false,'font preload has crossorigin hint');
+$profile=FurMedia\Cache\Delivery::profile($delivery);check(strpos($profile,'text/css "access plus 120 seconds"')!==false&&strpos($profile,'application/pdf')!==false,'browser policy covers configured MIME types');
+check(!FurMedia\Cache\Delivery::gzipAllowed('br, gzip;q=0')&&FurMedia\Cache\Delivery::gzipAllowed('gzip; q=0.5'),'gzip negotiation respects q=0');
+$gzipStore=new FileStore($tmp.'/gzip-reserve');$plain=str_repeat('original XML content ',100);$gzip=FurMedia\Cache\Delivery::compressed($plain,'gzip',$gzipStore,120,true);
+check(gzdecode($gzip)===$plain&&$gzipStore->stats()['entries']===1,'reserved gzip roundtrip persists one bounded entry');
+check(FurMedia\Cache\Delivery::compressed($plain,'gzip',$gzipStore,120,true)===$gzip&&$gzipStore->stats()['entries']===1,'reserved gzip reused without duplicate entries');
+check(FurMedia\Cache\Delivery::compressed($plain,'gzip;q=0',$gzipStore,120,true)===null,'unaccepted gzip is never served');
+$inventoryStore=new FileStore($tmp.'/inventory');$inventoryStore->set('one',array('body'=>'secret-not-in-inventory'),120,array('route:common/home','session:private-digest'));$inventoryStore->set('two','safe',120,array('component'));
+$rows=$inventoryStore->inventory();check(count($rows)===2&&strpos(json_encode($rows),'secret-not-in-inventory')===false&&strpos(json_encode($rows),'private-digest')===false,'inventory excludes cache contents and session tags');
+$one=hash('sha256','one');$inventoryStore->removeId($one);check($inventoryStore->get('one')===null&&$inventoryStore->get('two')==='safe','individual entry invalidation preserves unrelated entries');
+$failed=false;try{$inventoryStore->removeId('../generation');}catch(Exception $e){$failed=true;}check($failed,'inventory identifier cannot traverse storage');
+$vaultPanel=new FurMedia\Cache\Vault($tmp.'/panel-vault');$panelToken=FurMedia\Cache\FrontPanel::token($vaultPanel,'session-one','generation-one',time()+60);
+check(FurMedia\Cache\FrontPanel::verify($vaultPanel,$panelToken,'session-one','generation-one'),'panel signed token accepted for current session');
+check(!FurMedia\Cache\FrontPanel::verify($vaultPanel,$panelToken,'session-two','generation-one')&&!FurMedia\Cache\FrontPanel::verify($vaultPanel,$panelToken,'session-one','generation-two'),'panel refuses other session or purged generation');
+$panelHtml=FurMedia\Cache\FrontPanel::html('/index.php?route=fixture',$panelToken,40,$delivery);check(strpos($panelHtml,'method:"POST"')!==false&&strpos($panelHtml,'data-skynova-count')!==false,'frontend countdown uses signed same-origin POST');
+mkdir($tmp.'/maintenance-source');file_put_contents($tmp.'/maintenance-source/a.log','own test log');file_put_contents($tmp.'/maintenance-source/index.html','preserve');file_put_contents($tmp.'/maintenance-source/source.php','preserve');
+$archived=FurMedia\Cache\Management::archive('logs',array('logs'=>$tmp.'/maintenance-source'),$tmp.'/maintenance-vault');
+check($archived['moved']===1&&!is_file($tmp.'/maintenance-source/a.log')&&is_file($tmp.'/maintenance-vault/'.$archived['archive'].'/a.log'),'log clearing leaves recoverable archive');
+check(is_file($tmp.'/maintenance-source/index.html')&&is_file($tmp.'/maintenance-source/source.php'),'maintenance retains entrypoints and non-log source');
+mkdir($tmp.'/web-policy');file_put_contents($tmp.'/web-policy/.htaccess',"RewriteEngine On\n# existing user rules\n");$backup=FurMedia\Cache\Delivery::applyApache($tmp.'/web-policy',$tmp.'/apache-backup',$delivery);FurMedia\Cache\Delivery::applyApache($tmp.'/web-policy',$tmp.'/apache-backup',$delivery);$ht=file_get_contents($tmp.'/web-policy/.htaccess');
+check(substr_count($ht,'SKYNOVA-BROWSER-START')===1&&strpos($ht,'existing user rules')!==false,'Apache policy replacement is idempotent and retains native rules');
+check(file_get_contents($tmp.'/apache-backup/'.$backup)==="RewriteEngine On\n# existing user rules\n"&&strpos($ht,'location ~*')===false,'Apache backup exact and nginx directives excluded');
+$enqueueCalls=0;$loginQueue=new FurMedia\Cache\WarmQueue($tmp.'/login-queue','https://shop.example',function()use(&$enqueueCalls){$enqueueCalls++;return array('body'=>'ok');});$queued=$loginQueue->run(array('paths'=>array('/'),'limit'=>0));
+check($enqueueCalls===0&&$queued['remaining']===1,'login enqueue performs no remote request or cookie forwarding');
+
+$paginationStore=new FileStore($tmp.'/inventory-pagination');$paginationStore->set('first','one',120);$paginationStore->set('second','two',120);check(count($paginationStore->inventory(1,0))===1&&$paginationStore->inventory(1,0)[0]['id']!==$paginationStore->inventory(1,1)[0]['id'],'cache inventory pagination reaches distinct entries');

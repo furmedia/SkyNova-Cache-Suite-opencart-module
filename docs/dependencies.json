@@ -1,0 +1,16 @@
+[
+  {
+    "package": "matthiasmullie/minify",
+    "reference": "76ba4a5f555fd7bf4aa408af608e991569076671",
+    "license": "MIT",
+    "archive_sha256": "562e545ffda4adba9c46a2fafed27d7a6f99b8d51fe0a56b781f4325289cd679",
+    "url": "https://api.github.com/repos/matthiasmullie/minify/zipball/76ba4a5f555fd7bf4aa408af608e991569076671"
+  },
+  {
+    "package": "matthiasmullie/path-converter",
+    "reference": "e7d13b2c7e2f2268e1424aaed02085518afa02d9",
+    "license": "MIT",
+    "archive_sha256": "79481872937049d0ec74da0ce18fc292df3eb7531dbf867c824437be8ad9822c",
+    "url": "https://api.github.com/repos/matthiasmullie/path-converter/zipball/e7d13b2c7e2f2268e1424aaed02085518afa02d9"
+  }
+]

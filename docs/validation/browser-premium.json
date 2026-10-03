@@ -1,0 +1,29 @@
+{
+  "checks": [
+    "Native admin layout 1440px, no duplicate IDs or horizontal overflow",
+    "Native admin layout 390px, no duplicate IDs or horizontal overflow",
+    "Backend and shared-route controls visible",
+    "New data and merge controls visible",
+    "Completion and ESI controls visible",
+    "Advanced multimedia, conditional and database controls visible",
+    "Database and external import operations visible",
+    "Integration secret input remains blank",
+    "Delayed external JS executes once in original order after interaction",
+    "Timeout after interaction does not execute scripts twice",
+    "Merged JS executes once in native order",
+    "Merged CSS loads and preserves cascade",
+    "Extracted JS executes once in original order at top",
+    "Extracted JS executes once in original order at bottom",
+    "Native inventory pagination preserves selected admin context",
+    "Widget refresh updates real native cart after add-to-cart",
+    "Widget refresh stays isolated in another native browser session",
+    "Frontend panel countdown advances on native cached page",
+    "Frontend signed purge button reloads native page once",
+    "Per-script event/timer delay executes once after pointer interaction",
+    "Custom CSS and JS execute in browser",
+    "Video and audio preload disabled without dropping sources",
+    "Lazy block preserves replaced DOM content"
+  ],
+  "timestamp": "2026-10-03T13:31:24.991Z",
+  "environment": "local Chromium / OC3.0.5.1"
+}

@@ -1,0 +1,31 @@
+{
+  "version": "0.4.0",
+  "environment": "isolated OC4.0.2.3 default theme / native Loader / MySQL8.4.3",
+  "checks": [
+    "native data settings saved",
+    "native SQL facade renders category",
+    "native count config disabled",
+    "native SQL facade renders category",
+    "native count config disabled",
+    "native SQL facade renders category",
+    "native count config disabled",
+    "native SQL facade renders category",
+    "native count config disabled",
+    "native MySQL SELECT result reused",
+    "native data settings saved",
+    "native component output retained",
+    "native component output retained",
+    "native component output retained",
+    "native component output retained",
+    "component cache skips native controller across HTTP requests",
+    "component HIT counter recorded",
+    "native component isolated for fresh visitor",
+    "native index diagnostic renders existing coverage",
+    "index DDL blocked by invalid nonce",
+    "selected real MySQL index added",
+    "native index apply idempotent",
+    "index identifier injection rejected"
+  ],
+  "production_changed": false,
+  "timestamp": "2026-10-03T12:01:47Z"
+}

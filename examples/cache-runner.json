@@ -1,0 +1,6 @@
+{
+  "cache_directory": "/home/ACCOUNT/domains/SHOP/storage/cache/furmedia_cache",
+  "origin": "https://shop.example",
+  "paths": ["/", "/index.php?route=product/category&path=20"],
+  "limit": 10
+}

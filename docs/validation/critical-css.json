@@ -1,0 +1,15 @@
+{
+  "checks": [
+    "Visible hero selector extracted",
+    "Unused selector excluded",
+    "Below-fold selector excluded",
+    "Two viewports measured"
+  ],
+  "viewports": [
+    "390x844",
+    "1440x1000"
+  ],
+  "bytes": 35,
+  "warnings": [],
+  "note": "Automatically extracted; verify visual rendering before applying. Original CSS must remain available."
+}

@@ -1,0 +1,65 @@
+{
+  "checked_at_utc": "2026-10-03T19:09:18Z",
+  "runtimes": [
+    {
+      "php": "5.6.40",
+      "lint_files": 287,
+      "lint_failures": [],
+      "core_exit": 0,
+      "core_output": "PASS 313 assertions on PHP 5.6.40\n"
+    },
+    {
+      "php": "7.4.33",
+      "lint_files": 287,
+      "lint_failures": [],
+      "core_exit": 0,
+      "core_output": "PASS 313 assertions on PHP 7.4.33\n"
+    },
+    {
+      "php": "8.2.32",
+      "lint_files": 287,
+      "lint_failures": [],
+      "core_exit": 0,
+      "core_output": "PASS 313 assertions on PHP 8.2.32\n"
+    },
+    {
+      "php": "8.3.32",
+      "lint_files": 287,
+      "lint_failures": [],
+      "core_exit": 0,
+      "core_output": "PASS 313 assertions on PHP 8.3.32\n"
+    }
+  ],
+  "native": [
+    {
+      "opencart": "2.3.0.2",
+      "php": "5.6.40",
+      "exit": 0,
+      "output": "PASS oc23 / OC 2.3.0.2 / PHP 5.6.40 / 54 assertions (native classes; session/cart doubles, no full store)\n"
+    },
+    {
+      "opencart": "3.0.5.0",
+      "php": "8.3.32",
+      "exit": 0,
+      "output": "PASS oc3 / OC 3.0.5.0 / PHP 8.3.32 / 54 assertions (native classes; session/cart doubles, no full store)\n"
+    },
+    {
+      "opencart": "3.0.5.1",
+      "php": "8.3.32",
+      "exit": 0,
+      "output": "PASS oc3 / OC 3.0.5.1 / PHP 8.3.32 / 54 assertions (native classes; session/cart doubles, no full store)\n"
+    },
+    {
+      "opencart": "4.0.2.3",
+      "php": "8.3.32",
+      "exit": 0,
+      "output": "PASS oc4 / OC 4.0.2.3 / PHP 8.3.32 / 51 assertions (native classes; session/cart doubles, no full store)\n"
+    },
+    {
+      "opencart": "4.1.0.3",
+      "php": "8.3.32",
+      "exit": 0,
+      "output": "PASS oc4 / OC 4.1.0.3 / PHP 8.3.32 / 50 assertions (native classes; session/cart doubles, no full store)\n"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "scope": "own isolated native OpenCart",
+  "checks": [
+    "resumable database controls render",
+    "suite settings render",
+    "browser-local PWA controls render",
+    "table swap requires explicit checkbox",
+    "native maintenance required before table swap",
+    "foreign table archive refused",
+    "measured EXPLAIN comparison stored",
+    "unbounded benchmark refused",
+    "bounded actual SELECT benchmark",
+    "scheduler pause native action",
+    "scheduler resume native action",
+    "suite settings save",
+    "worker registration on public native HTML",
+    "native worker endpoint",
+    "worker scope and MIME headers",
+    "aggregate views appear in admin",
+    "worker POST refused status 405"
+  ],
+  "count": 17,
+  "original_settings_restored": true
+}

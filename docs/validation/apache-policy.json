@@ -1,0 +1,15 @@
+{
+  "version": "0.5.0",
+  "checks": [
+    "Real Apache static css max-age 120",
+    "Real Apache static js max-age 180",
+    "Real Apache static jpg max-age 31536000",
+    "Real Apache static pdf max-age 86400",
+    "Real Apache static mp4 max-age 2592000",
+    "Real Apache static woff2 max-age 31536000",
+    "Real Apache html excluded from static expiration policy",
+    "Real Apache php excluded from static expiration policy"
+  ],
+  "environment": "Own Apache 2.4.66 single-process loopback fixture",
+  "production_changed": false
+}

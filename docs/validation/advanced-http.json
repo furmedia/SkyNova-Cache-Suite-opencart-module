@@ -1,0 +1,22 @@
+{
+  "scope": "isolated loopback OpenCart 3.0.5.1",
+  "checks": [
+    "advanced settings render natively",
+    "memory choices render",
+    "maintenance and import panels render",
+    "native database grid populated",
+    "native EXPLAIN read-only catalog",
+    "private table EXPLAIN rejected",
+    "native selected ANALYZE",
+    "conversion requires checkbox",
+    "retention requires matching preview",
+    "native retention preview without delete",
+    "unverified external import refused before network",
+    "new configuration saves",
+    "conditional disable bypasses native page cache",
+    "native admin product listing preserved while profiling",
+    "SQL profiling samples render natively"
+  ],
+  "count": 15,
+  "original_settings_restored": true
+}
