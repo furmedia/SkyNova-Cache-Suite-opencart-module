@@ -1,0 +1,125 @@
+{
+  "at": "2026-10-07T23:45:29.328Z",
+  "scope": "Android UA, viewport390x844; existing browser cart preserved; not physical phone",
+  "home": {
+    "nativeClassesPreserved": true,
+    "noMissingStylesheetLinks": true,
+    "journalConfigEqual": true,
+    "cache": [
+      {
+        "cache": "HIT",
+        "ttfbMs": 850.22
+      }
+    ],
+    "visualCompared": true
+  },
+  "category": {
+    "missingCssIds": [],
+    "changedJournalKeys": [],
+    "classesMatch": true,
+    "visibleImagesAllLoaded": true
+  },
+  "product": {
+    "nativeGeometry": [
+      {
+        "display": "block",
+        "font": "24px",
+        "height": 57.60000228881836,
+        "padding": "0px",
+        "selector": ".page-title",
+        "width": 375.2000122070313
+      },
+      {
+        "display": "flex",
+        "font": "15px",
+        "height": 327.1625061035156,
+        "padding": "0px",
+        "selector": ".product-image",
+        "width": 327.20001220703125
+      },
+      {
+        "display": "flex",
+        "font": "15px",
+        "height": 1187.8125,
+        "padding": "0px",
+        "selector": ".product-info",
+        "width": 327.20001220703125
+      },
+      {
+        "display": "flex",
+        "font": "15px",
+        "height": 677,
+        "padding": "0px",
+        "selector": ".product-details",
+        "width": 327.20001220703125
+      },
+      {
+        "display": "block",
+        "font": "15px",
+        "height": 110.8000030517578,
+        "padding": "16px 16px 24px",
+        "selector": ".button-group-page",
+        "width": 375.2000122070313
+      }
+    ],
+    "cachedGeometry": [
+      {
+        "display": "block",
+        "font": "24px",
+        "height": 57.60000228881836,
+        "padding": "0px",
+        "selector": ".page-title",
+        "width": 375.2000122070313
+      },
+      {
+        "display": "flex",
+        "font": "15px",
+        "height": 327.1625061035156,
+        "padding": "0px",
+        "selector": ".product-image",
+        "width": 327.20001220703125
+      },
+      {
+        "display": "flex",
+        "font": "15px",
+        "height": 1187.8125,
+        "padding": "0px",
+        "selector": ".product-info",
+        "width": 327.20001220703125
+      },
+      {
+        "display": "flex",
+        "font": "15px",
+        "height": 677,
+        "padding": "0px",
+        "selector": ".product-details",
+        "width": 327.20001220703125
+      },
+      {
+        "display": "block",
+        "font": "15px",
+        "height": 110.8000030517578,
+        "padding": "16px 16px 24px",
+        "selector": ".button-group-page",
+        "width": 375.2000122070313
+      }
+    ],
+    "geometryMatches": true,
+    "repeats": [
+      {
+        "cache": "HIT",
+        "ttfbMs": 1256.553
+      },
+      {
+        "cache": "HIT",
+        "ttfbMs": 1449.148
+      },
+      {
+        "cache": "HIT",
+        "ttfbMs": 1324.611
+      }
+    ]
+  },
+  "mobileMenuOpenedAndClosed": true,
+  "limitations": "Computed layout and selected resources checked; native and HIT CSS text differs in repeated equivalent background declarations. Not every layout/theme variant certified."
+}

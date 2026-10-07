@@ -1,6 +1,6 @@
 # Instalare și operare
 
-Versiune 0.7.2 development preview. Instalați întâi într-un staging cu backup. Alegeți arhiva familiei corecte: OC2.3, OC3 sau OC4. Pentru OC4 păstrați exact numele `furmedia_cache.ocmod.zip`; platforma îl folosește ca identificator.
+Versiune 0.7.3 development preview. Instalați întâi într-un staging cu backup. Alegeți arhiva familiei corecte: OC2.3, OC3 sau OC4. Pentru OC4 păstrați exact numele `furmedia_cache.ocmod.zip`; platforma îl folosește ca identificator.
 
 La actualizare, apăsați „Instalează / repară meniurile SkyNova” în modul, apoi reîncărcați pagina. Bara globală oferă stare, invalidare selectivă și preîncălzire pentru magazinul principal. Dacă serverul execută codul anterior după instalare, verificați data fișierului controllerului și invalidarea OPcache prin mecanismul hostingului.
 

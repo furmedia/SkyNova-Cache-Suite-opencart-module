@@ -87,3 +87,10 @@ Probele 0.7.1 verificau vizitatori cu numai cookie-urile native OpenCart. Un bro
 - Browser cu User-Agent Android și viewport 390×844, păstrând coșul utilizatorului: HIT session-fragments, TTFB 433,603 ms; header 263,12 ms, footer 57,45 ms. Identitatea și viewport-ul temporare au fost restaurate. Nu este o măsurare pe telefonul fizic al utilizatorului și nu este un scor CWV.
 - Cookie-ul jrv reînnoit de Journal pe fiecare produs este ignorat numai pentru admiterea unui răspuns privat când valoarea sa este identică în cookie-ul cererii și istoricul nativ. Nu se salvează antete Set-Cookie. Alte cookie-uri/modificări continuă să refuze memorarea.
 - Dovezi: `validation/trinity-mobile-private-http.json`, `validation/trinity-mobile-private-browser.json`, `validation/trinity-mobile-private-browser.png`. Rutele autentificate, filtrele AJAX și query-urile neaprobate rămân native. Adresa și starea contului de pe telefonul fizic nu au fost furnizate în timpul acestei probe.
+
+
+### Corecție vizuală 0.7.3 — Journal 3.2.10
+
+Rezultatele HTTP din 0.7.2 nu confirmau aspectul paginii. Cache HIT pierdea stiluri/configurații ale modulelor din corp, iar captura mobilă publicată era defectă. 0.7.3 păstrează separat starea de prezentare Journal, generează subsolul înaintea antetului și conservă elementele globale de layout. Datele de sesiune, tokenurile și obiectele native nu sunt serializate. Adapterul este limitat la API-ul Journal 3.2.10 inspectat; versiunile/API-urile neacceptate rămân native.
+
+Verificări live: homepage mobil afișat corect pe HIT; categoria păstrează toate grupurile CSS și configurația JS, cu toate imaginile vizibile încărcate; geometria principalelor elemente de produs (titlu, imagine, informații, detalii, butoane) este identică cu pagina nativă. Meniul mobil se deschide și se închide. Acestea sunt verificări în emulare Android, nu certificarea tuturor variantelor Journal sau a tuturor paginilor magazinului.

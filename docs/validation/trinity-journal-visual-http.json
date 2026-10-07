@@ -1,0 +1,528 @@
+{
+  "at": "2026-10-07T23:44:44+00:00",
+  "scope": "synthetic Android guests with PHPSESSID and jrv cookies; own test cart only",
+  "requests": [
+    {
+      "visitor": "a",
+      "path": "index.php?route=common/home",
+      "method": "GET",
+      "http": 200,
+      "cache": "BYPASS-state-change",
+      "scope": "session-fragments",
+      "native_timing": "",
+      "seconds": 1.757878,
+      "wire_bytes": 69530,
+      "html_bytes": 567202
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=common/home",
+      "method": "GET",
+      "http": 200,
+      "cache": "MISS",
+      "scope": "session-fragments",
+      "native_timing": "",
+      "seconds": 1.753363,
+      "wire_bytes": 69598,
+      "html_bytes": 567202
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=common/home",
+      "method": "GET",
+      "http": 200,
+      "cache": "HIT",
+      "scope": "session-fragments",
+      "native_timing": "skynova-header;dur=228.29, skynova-footer;dur=145.39",
+      "seconds": 0.574594,
+      "wire_bytes": 69773,
+      "html_bytes": 557828
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=common/home",
+      "method": "GET",
+      "http": 200,
+      "cache": "HIT",
+      "scope": "session-fragments",
+      "native_timing": "skynova-header;dur=245.5, skynova-footer;dur=153.51",
+      "seconds": 0.621805,
+      "wire_bytes": 69611,
+      "html_bytes": 557828
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=common/home",
+      "method": "GET",
+      "http": 200,
+      "cache": "HIT",
+      "scope": "session-fragments",
+      "native_timing": "skynova-header;dur=247.12, skynova-footer;dur=148.74",
+      "seconds": 0.632243,
+      "wire_bytes": 69717,
+      "html_bytes": 557828
+    },
+    {
+      "visitor": "b",
+      "path": "index.php?route=common/home",
+      "method": "GET",
+      "http": 200,
+      "cache": "BYPASS-state-change",
+      "scope": "session-fragments",
+      "native_timing": "",
+      "seconds": 1.599604,
+      "wire_bytes": 69498,
+      "html_bytes": 567202
+    },
+    {
+      "visitor": "b",
+      "path": "index.php?route=common/home",
+      "method": "GET",
+      "http": 200,
+      "cache": "MISS",
+      "scope": "session-fragments",
+      "native_timing": "",
+      "seconds": 1.586689,
+      "wire_bytes": 69572,
+      "html_bytes": 567202
+    },
+    {
+      "visitor": "b",
+      "path": "index.php?route=common/home",
+      "method": "GET",
+      "http": 200,
+      "cache": "HIT",
+      "scope": "session-fragments",
+      "native_timing": "skynova-header;dur=252.37, skynova-footer;dur=141.51",
+      "seconds": 0.613202,
+      "wire_bytes": 69829,
+      "html_bytes": 557828
+    },
+    {
+      "visitor": "b",
+      "path": "index.php?route=common/home",
+      "method": "GET",
+      "http": 200,
+      "cache": "HIT",
+      "scope": "session-fragments",
+      "native_timing": "skynova-header;dur=272.33, skynova-footer;dur=143.4",
+      "seconds": 0.618115,
+      "wire_bytes": 69765,
+      "html_bytes": 557828
+    },
+    {
+      "visitor": "b",
+      "path": "index.php?route=common/home",
+      "method": "GET",
+      "http": 200,
+      "cache": "HIT",
+      "scope": "session-fragments",
+      "native_timing": "skynova-header;dur=227.15, skynova-footer;dur=144.91",
+      "seconds": 0.607714,
+      "wire_bytes": 69791,
+      "html_bytes": 557828
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=extension/module/back_in_stock/sessionToken",
+      "method": "GET",
+      "http": 200,
+      "cache": "BYPASS-sensitive-route",
+      "scope": "session",
+      "native_timing": "",
+      "seconds": 0.093026,
+      "wire_bytes": 75,
+      "html_bytes": 59
+    },
+    {
+      "visitor": "b",
+      "path": "index.php?route=extension/module/back_in_stock/sessionToken",
+      "method": "GET",
+      "http": 200,
+      "cache": "BYPASS-sensitive-route",
+      "scope": "session",
+      "native_timing": "",
+      "seconds": 0.090631,
+      "wire_bytes": 75,
+      "html_bytes": 59
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=product/category&path=64",
+      "method": "GET",
+      "http": 200,
+      "cache": "MISS",
+      "scope": "session-fragments",
+      "native_timing": "",
+      "seconds": 7.308824,
+      "wire_bytes": 98287,
+      "html_bytes": 891655
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=product/category&path=64",
+      "method": "GET",
+      "http": 200,
+      "cache": "HIT",
+      "scope": "session-fragments",
+      "native_timing": "skynova-header;dur=305.02, skynova-footer;dur=65.54",
+      "seconds": 0.61341,
+      "wire_bytes": 98212,
+      "html_bytes": 884745
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=product/category&path=64",
+      "method": "GET",
+      "http": 200,
+      "cache": "HIT",
+      "scope": "session-fragments",
+      "native_timing": "skynova-header;dur=283.74, skynova-footer;dur=68.24",
+      "seconds": 0.590227,
+      "wire_bytes": 98178,
+      "html_bytes": 884745
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=product/category&path=64",
+      "method": "GET",
+      "http": 200,
+      "cache": "HIT",
+      "scope": "session-fragments",
+      "native_timing": "skynova-header;dur=261.62, skynova-footer;dur=67.2",
+      "seconds": 0.551045,
+      "wire_bytes": 98210,
+      "html_bytes": 884745
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=product/category&path=64",
+      "method": "GET",
+      "http": 200,
+      "cache": "HIT",
+      "scope": "session-fragments",
+      "native_timing": "skynova-header;dur=273.17, skynova-footer;dur=64.8",
+      "seconds": 0.57424,
+      "wire_bytes": 98236,
+      "html_bytes": 884745
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=product/product&product_id=6624",
+      "method": "GET",
+      "http": 200,
+      "cache": "MISS",
+      "scope": "session-fragments",
+      "native_timing": "",
+      "seconds": 2.604524,
+      "wire_bytes": 77051,
+      "html_bytes": 653659
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=product/product&product_id=6624",
+      "method": "GET",
+      "http": 200,
+      "cache": "HIT",
+      "scope": "session-fragments",
+      "native_timing": "skynova-header;dur=258.68, skynova-footer;dur=291.15",
+      "seconds": 1.307319,
+      "wire_bytes": 76491,
+      "html_bytes": 642962
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=product/product&product_id=6624",
+      "method": "GET",
+      "http": 200,
+      "cache": "HIT",
+      "scope": "session-fragments",
+      "native_timing": "skynova-header;dur=232.41, skynova-footer;dur=217.47",
+      "seconds": 1.186477,
+      "wire_bytes": 76502,
+      "html_bytes": 642962
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=product/product&product_id=6624",
+      "method": "GET",
+      "http": 200,
+      "cache": "HIT",
+      "scope": "session-fragments",
+      "native_timing": "skynova-header;dur=290.03, skynova-footer;dur=250.67",
+      "seconds": 1.325319,
+      "wire_bytes": 76504,
+      "html_bytes": 642962
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=product/product&product_id=6624",
+      "method": "GET",
+      "http": 200,
+      "cache": "HIT",
+      "scope": "session-fragments",
+      "native_timing": "skynova-header;dur=254.84, skynova-footer;dur=230.73",
+      "seconds": 1.305252,
+      "wire_bytes": 76489,
+      "html_bytes": 642962
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=checkout/cart/add",
+      "method": "POST",
+      "http": 200,
+      "cache": "BYPASS-method",
+      "scope": "session",
+      "native_timing": "",
+      "seconds": 0.182705,
+      "wire_bytes": 532,
+      "html_bytes": 1502
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=common/home",
+      "method": "GET",
+      "http": 200,
+      "cache": "MISS",
+      "scope": "session-fragments",
+      "native_timing": "",
+      "seconds": 1.641083,
+      "wire_bytes": 70216,
+      "html_bytes": 569419
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=common/home",
+      "method": "GET",
+      "http": 200,
+      "cache": "HIT",
+      "scope": "session-fragments",
+      "native_timing": "skynova-header;dur=266.32, skynova-footer;dur=148.39",
+      "seconds": 0.641679,
+      "wire_bytes": 70158,
+      "html_bytes": 560045
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=common/home",
+      "method": "GET",
+      "http": 200,
+      "cache": "HIT",
+      "scope": "session-fragments",
+      "native_timing": "skynova-header;dur=290.15, skynova-footer;dur=147.13",
+      "seconds": 0.652709,
+      "wire_bytes": 70172,
+      "html_bytes": 560045
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=common/home",
+      "method": "GET",
+      "http": 200,
+      "cache": "HIT",
+      "scope": "session-fragments",
+      "native_timing": "skynova-header;dur=258.44, skynova-footer;dur=143.21",
+      "seconds": 0.620992,
+      "wire_bytes": 70174,
+      "html_bytes": 560045
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=checkout/cart",
+      "method": "GET",
+      "http": 200,
+      "cache": "BYPASS-private-customer",
+      "scope": "session",
+      "native_timing": "",
+      "seconds": 0.584709,
+      "wire_bytes": 52367,
+      "html_bytes": 345288
+    },
+    {
+      "visitor": "b",
+      "path": "index.php?route=checkout/cart",
+      "method": "GET",
+      "http": 200,
+      "cache": "BYPASS-sensitive-route",
+      "scope": "session",
+      "native_timing": "",
+      "seconds": 0.553171,
+      "wire_bytes": 45530,
+      "html_bytes": 302896
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=checkout/checkout",
+      "method": "GET",
+      "http": 200,
+      "cache": "BYPASS-private-customer",
+      "scope": "session",
+      "native_timing": "",
+      "seconds": 0.577204,
+      "wire_bytes": 49543,
+      "html_bytes": 340096
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=checkout/cart/remove",
+      "method": "POST",
+      "http": 200,
+      "cache": "BYPASS-method",
+      "scope": "session",
+      "native_timing": "",
+      "seconds": 0.110652,
+      "wire_bytes": 104,
+      "html_bytes": 91
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=checkout/cart",
+      "method": "GET",
+      "http": 200,
+      "cache": "BYPASS-sensitive-route",
+      "scope": "session",
+      "native_timing": "",
+      "seconds": 0.542917,
+      "wire_bytes": 45540,
+      "html_bytes": 302896
+    }
+  ],
+  "checks": [
+    {
+      "name": "complete home a 0",
+      "passed": true
+    },
+    {
+      "name": "complete home a 1",
+      "passed": true
+    },
+    {
+      "name": "complete home a 2",
+      "passed": true
+    },
+    {
+      "name": "complete home a 3",
+      "passed": true
+    },
+    {
+      "name": "complete home a 4",
+      "passed": true
+    },
+    {
+      "name": "repeat home gets private HIT a",
+      "passed": true
+    },
+    {
+      "name": "complete home b 0",
+      "passed": true
+    },
+    {
+      "name": "private visitor b cannot reuse visitor a entry",
+      "passed": true
+    },
+    {
+      "name": "complete home b 1",
+      "passed": true
+    },
+    {
+      "name": "complete home b 2",
+      "passed": true
+    },
+    {
+      "name": "complete home b 3",
+      "passed": true
+    },
+    {
+      "name": "complete home b 4",
+      "passed": true
+    },
+    {
+      "name": "repeat home gets private HIT b",
+      "passed": true
+    },
+    {
+      "name": "footer tokens remain visitor-specific",
+      "passed": true
+    },
+    {
+      "name": "own footer token a",
+      "passed": true
+    },
+    {
+      "name": "own footer token b",
+      "passed": true
+    },
+    {
+      "name": "catalog complete index.php?route=product/category&path=64 0",
+      "passed": true
+    },
+    {
+      "name": "catalog complete index.php?route=product/category&path=64 1",
+      "passed": true
+    },
+    {
+      "name": "catalog complete index.php?route=product/category&path=64 2",
+      "passed": true
+    },
+    {
+      "name": "catalog complete index.php?route=product/category&path=64 3",
+      "passed": true
+    },
+    {
+      "name": "catalog complete index.php?route=product/category&path=64 4",
+      "passed": true
+    },
+    {
+      "name": "repeat catalog private HIT index.php?route=product/category&path=64",
+      "passed": true
+    },
+    {
+      "name": "catalog complete index.php?route=product/product&product_id=6624 0",
+      "passed": true
+    },
+    {
+      "name": "catalog complete index.php?route=product/product&product_id=6624 1",
+      "passed": true
+    },
+    {
+      "name": "catalog complete index.php?route=product/product&product_id=6624 2",
+      "passed": true
+    },
+    {
+      "name": "catalog complete index.php?route=product/product&product_id=6624 3",
+      "passed": true
+    },
+    {
+      "name": "catalog complete index.php?route=product/product&product_id=6624 4",
+      "passed": true
+    },
+    {
+      "name": "repeat catalog private HIT index.php?route=product/product&product_id=6624",
+      "passed": true
+    },
+    {
+      "name": "own test cart add",
+      "passed": true
+    },
+    {
+      "name": "occupied cart home gets isolated private HIT",
+      "passed": true
+    },
+    {
+      "name": "cart page remains native",
+      "passed": true
+    },
+    {
+      "name": "other private visitor has no test cart",
+      "passed": true
+    },
+    {
+      "name": "checkout remains native without order",
+      "passed": true
+    },
+    {
+      "name": "own test cart removed",
+      "passed": true
+    }
+  ]
+}

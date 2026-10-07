@@ -1,0 +1,17 @@
+[
+  {
+    "php": "7.4.33",
+    "exit": 0,
+    "output": "PASS 20 native Journal presentation checks\n"
+  },
+  {
+    "php": "8.2.32",
+    "exit": 0,
+    "output": "PASS 20 native Journal presentation checks\n"
+  },
+  {
+    "php": "8.3.32",
+    "exit": 0,
+    "output": "PASS 20 native Journal presentation checks\n"
+  }
+]

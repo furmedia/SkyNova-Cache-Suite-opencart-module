@@ -78,15 +78,23 @@ class SharedPage {
     }
     public static function render(array $entry,$registry,&$timings=null) {
         if (!isset($entry['shell'],$entry['document'])) { throw new \RuntimeException('Invalid shared entry'); }
+        $journal=$registry->has('journal3');
+        if($journal){if(empty($entry['journal'])){throw new \RuntimeException('Journal presentation state missing');}JournalState::restore($registry,$entry['journal']);}
         $doc=$registry->get('document');$m=$entry['document'];
         foreach(array('Title','Description','Keywords') as $field){$setter='set'.$field;$doc->$setter($m[$field]);}
         foreach($m['Links'] as $link){$doc->addLink($link['href'],$link['rel']);}
         foreach($m['Styles'] as $style){$doc->addStyle($style['href'],$style['rel'],$style['media']);}
         foreach($m['scripts'] as $position=>$scripts){foreach($scripts as $script){$doc->addScript($script,$position);}}
-        $start=microtime(true);$header=$registry->get('load')->controller('common/header');$middle=microtime(true);
-        $footer=$registry->get('load')->controller('common/footer');
-        $timings=array('header'=>round(1000*($middle-$start),2),'footer'=>round(1000*(microtime(true)-$middle),2));
+        // Native OC catalog controllers render footer before header. Journal footer modules
+        // register CSS/fonts needed by the header; reversing this order loses those assets.
+        $start=microtime(true);$footer=$registry->get('load')->controller('common/footer');$middle=microtime(true);
+        if($journal){JournalState::deduplicateCss($registry);}
+        $header=$registry->get('load')->controller('common/header');
+        $timings=array('footer'=>round(1000*($middle-$start),2),'header'=>round(1000*(microtime(true)-$middle),2));
         if (!is_string($header) || !$header || !is_string($footer) || !$footer) { throw new \RuntimeException('Native fragments unavailable'); }
+        // The native outer catalog view applies Journal's HTML transform after composing
+        // these fragments. The cached shell already has that transform; only fresh parts need it.
+        if($journal && $registry->get('journal3')->get('performanceHTMLMinify') && class_exists('Journal3\\Utils\\Min')){$header=\Journal3\Utils\Min::minifyHTML($header);$footer=\Journal3\Utils\Min::minifyHTML($footer);}
         return str_replace(array('<!--skynova-dynamic-header-->','<!--skynova-dynamic-footer-->'),array($header,$footer),$entry['shell']);
     }
 }

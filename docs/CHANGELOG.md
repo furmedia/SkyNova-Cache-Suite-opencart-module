@@ -46,6 +46,13 @@ Control module/instanțe, inventar și golire individuală, panou frontend semna
 
 # SkyNova Cache Suite
 
+## 0.7.3 — Journal visual regression repair
+
+- Fix Journal 3.2.10 fragment HIT pages losing body-module CSS, fonts, classes, JS configuration and layout overrides. Preserve a validated presentation-only snapshot; keep browser startup flags and live session data native.
+- Render native footer before header and preserve public bottom/global layout fragments. Reject unsupported Journal APIs or missing/unsafe presentation snapshots rather than serve incomplete cache HTML.
+- Previous 0.7.2 HTTP/cache-isolation checks did not establish visual correctness; its published mobile screenshot showed the regression. Revalidate visual rendering against native pages before reporting performance success.
+- Add native Journal Document regression checks. No proprietary Journal source is packaged.
+
 ## 0.3.0 — 3 octombrie 2026 — development preview
 
 - Cache pe componente cu adaptor Loader pentru OC2.3/3/4, izolare pe sesiune și verificarea efectelor asupra contextului.

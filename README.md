@@ -1,4 +1,4 @@
-# SkyNova Cache Suite — 0.7.2 development preview
+# SkyNova Cache Suite — 0.7.3 development preview
 
 Implementare originală de cache și optimizare pentru OpenCart 2.3, 3 și 4. Această versiune este pentru staging: nu reprezintă încă paritate completă cu NitroPack și nici certificare universală Journal.
 

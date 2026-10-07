@@ -18,6 +18,7 @@ class Bridge {
     private $lease;
     private $shared=false;
     private $privateFragments=false;
+    private $journalBaseline; private $journalPresentation;
     private $resource=false;
     private $esiUsed=false;
     private $esiEndpoint=false;
@@ -70,6 +71,7 @@ class Bridge {
         $profile=array();if($customer && $customer->isLogged()){foreach(array('getFirstName','getLastName','getEmail','getTelephone','getAddressId','getGroupId') as $method){if(method_exists($customer,$method)){$profile[$method]=$customer->$method();}}}
         $cookies = $this->get('request')->cookie; unset($cookies['skynova_state']);ksort($cookies);
         return array(
+            'presentation_schema'=>2,
             'store'=>(int)$config->get('config_store_id'),
             'origin'=>(string)$config->get('config_url'),
             'language'=>(string)$config->get('config_language_id'),
@@ -107,6 +109,7 @@ class Bridge {
     }
 
     public function before($route) {
+        if($this->started && !$this->hit && $route==='common/footer' && $this->journalBaseline!==null && $this->journalPresentation===null){$this->journalPresentation=JournalState::capture($this->registry,$this->journalBaseline);}
         if ($this->started || !$this->settings['status']) { return false; }
         // Only the main requested route. Nested common/header, module and Journal AJAX stay native.
         $q = $this->get('request');
@@ -155,6 +158,7 @@ class Bridge {
         }
         $this->lease=$this->store->lease($this->key);
         if (!$this->lease) { $this->key=null;$this->diagnostic('BYPASS-busy');$this->store->count('bypass');return false; }
+        if(($this->shared || $this->privateFragments) && $this->registry->has('journal3')){$this->journalBaseline=JournalState::baseline($this->registry);}
         $this->diagnostic('MISS'); $this->store->count('miss');
         return false;
     }
@@ -258,6 +262,11 @@ class Bridge {
         $minifier=null;if($this->registry->has('journal3') && class_exists('Journal3\\Utils\\Min')){$journalDefer=(bool)$this->get('journal3')->get('performanceJSDefer');$journalMin=(bool)$this->get('journal3')->get('performanceHTMLMinify');$minifier=function($fragment)use($journalDefer,$journalMin){if($journalMin){$fragment=\Journal3\Utils\Min::minifyHTML($fragment);}return $journalDefer?str_replace('<script type="text/javascript"','<script type="text/javascript/defer"',$fragment):$fragment;};}
         $fragmentReason='';$shared=($this->shared || $this->privateFragments) ? SharedPage::pack($body,$this->fragments,$this->get('document'),$fragmentReason,$minifier) : null;
         if (($this->shared || $this->privateFragments) && !$shared) { $this->diagnostic('BYPASS-fragments'.($fragmentReason?'-'.$fragmentReason:''));return; }
+        if($shared && $this->registry->has('journal3')){
+            if(!$this->journalPresentation){$this->diagnostic('BYPASS-journal-presentation');return;}
+            $shared['journal']=$this->journalPresentation;
+            if(method_exists($session,'getId') && strlen($session->getId())>=8 && strpos(json_encode($shared['journal']),$session->getId())!==false){$this->diagnostic('BYPASS-session-in-presentation');return;}
+        }
         $admissionBody=$shared?$shared['shell'].'</html>':$body;
         if (!(new Policy())->responseAllowed($admissionBody,$admissionHeaders,$status,(bool)$this->settings['cache_404'],$nativeCustomerToken)) { $this->diagnostic('BYPASS-response'); return; }
         if($shared && method_exists($session,'getId') && strlen($session->getId())>=8 && strpos($admissionBody,$session->getId())!==false){$this->diagnostic('BYPASS-session-in-body');return;}
