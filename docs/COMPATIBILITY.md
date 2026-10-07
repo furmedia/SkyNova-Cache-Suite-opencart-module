@@ -76,3 +76,14 @@ La prima etapă rămâneau fragmentul Back in Stock, reutilizarea între vizitat
 - PHP 5.6/7.4/8.2/8.3: 298 fișiere fără erori și 326 aserțiuni ale nucleului fiecare; încă 20 pentru admiterea Journal, 14 pentru navigare și 48 pentru linkurile autentificate fiecare. Fixture-uri native OC2.3/3/4 trecute; acestea nu certifică toate magazinele Journal.
 - Google PageSpeed încă răspunde HTTP 429. Mesajul explică limita; retry-ul este oprit cinci minute și raportul anterior este păstrat. Este necesară o cotă Google disponibilă/cheie API configurată pentru un scor nou real.
 - Dovezi: `validation/trinity-live-after-fixes.json`, `validation/trinity-shared-after-fixes.json`, `validation/php-matrix.json`, `validation/trinity-toolbar-after-fixes.png`. Nu au fost create conturi, comenzi sau plăți.
+
+## Vizite mobile reale — corecții 0.7.2
+
+Probele 0.7.1 verificau vizitatori cu numai cookie-urile native OpenCart. Un browser real poate avea și PHPSESSID, jrv, istoric Journal sau coș ocupat. Aceste sesiuni nu sunt admise în cache-ul comun; înainte, tokenul din footer împiedica și memorarea privată.
+
+0.7.2 adaugă `journal_private_routes`, dezactivat implicit. Pe TrinityConcept sunt aprobate home/category/product și `cart:true` în regulile acestor trei rute. Cheia privată păstrează identitatea sesiunii, toate cookie-urile, toate datele sesiunii, produsele coșului, moneda, limba, taxele și grupul. Antetul/subsolul sunt native la fiecare HIT. Clienții autentificați și checkout-ul nu sunt activați prin această opțiune.
+
+- 34/34 verificări live cu două Android sintetice, cookie-uri PHPSESSID/jrv, cinci vizite repetate de homepage/categorie/produs, tokenuri proprii și coș de test izolat. Produs MISS 2,474 s → HIT 0,999–1,074 s; categorie MISS 7,166 s → HIT 0,498–0,627 s; homepage cu coș HIT 0,472–0,539 s.
+- Browser cu User-Agent Android și viewport 390×844, păstrând coșul utilizatorului: HIT session-fragments, TTFB 433,603 ms; header 263,12 ms, footer 57,45 ms. Identitatea și viewport-ul temporare au fost restaurate. Nu este o măsurare pe telefonul fizic al utilizatorului și nu este un scor CWV.
+- Cookie-ul jrv reînnoit de Journal pe fiecare produs este ignorat numai pentru admiterea unui răspuns privat când valoarea sa este identică în cookie-ul cererii și istoricul nativ. Nu se salvează antete Set-Cookie. Alte cookie-uri/modificări continuă să refuze memorarea.
+- Dovezi: `validation/trinity-mobile-private-http.json`, `validation/trinity-mobile-private-browser.json`, `validation/trinity-mobile-private-browser.png`. Rutele autentificate, filtrele AJAX și query-urile neaprobate rămân native. Adresa și starea contului de pe telefonul fizic nu au fost furnizate în timpul acestei probe.

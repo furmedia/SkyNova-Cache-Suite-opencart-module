@@ -17,6 +17,7 @@ class Bridge {
     private $startupHeaders = array();
     private $lease;
     private $shared=false;
+    private $privateFragments=false;
     private $resource=false;
     private $esiUsed=false;
     private $esiEndpoint=false;
@@ -42,8 +43,9 @@ class Bridge {
     }
 
     private function get($key) { return $this->registry->get($key); }
+    private function renderFragments(array $entry){$timings=array();$body=SharedPage::render($entry,$this->registry,$timings);if($this->settings['debug']){$this->get('response')->addHeader('Server-Timing: skynova-header;dur='.$timings['header'].', skynova-footer;dur='.$timings['footer']);}return $this->optimizeBody($body);}
     public function viewFragments($route,&$data){
-        if(!$this->shared || $this->hit || !$this->registry->has('journal3') || !is_array($data) || !isset($data['header'],$data['footer']) || !is_string($data['header']) || !is_string($data['footer'])){return;}
+        if((!$this->shared && !$this->privateFragments) || $this->hit || !$this->registry->has('journal3') || !is_array($data) || !isset($data['header'],$data['footer']) || !is_string($data['header']) || !is_string($data['footer'])){return;}
         if($route!==$this->route && $route!=='journal3/'.$this->route){return;}
         foreach(array('header','footer') as $name){if(strpos($data[$name],'data-skynova-fragment')!==false){return;}}
         foreach(array('header','footer') as $name){$data[$name]=SharedPage::marker($name.'-start').$data[$name].SharedPage::marker($name.'-end');}
@@ -97,6 +99,7 @@ class Bridge {
     private function diagnostic($status) {
         if(!$this->settings['debug'] || ($this->settings['debug_session_hash']!=='' && (!isset($this->context['session_id']) || !hash_equals($this->settings['debug_session_hash'],$this->context['session_id'])))){return;}
         $this->get('response')->addHeader('X-FurMedia-Cache: ' . $status);
+        $this->get('response')->addHeader('X-SkyNova-Cache-Scope: '.($this->shared?'shared':($this->privateFragments?'session-fragments':'session')));
         if(!empty($this->context['session_id'])){$this->get('response')->addHeader('X-SkyNova-Session: '.$this->context['session_id']);}
         if($this->settings['debug_details']){
             try{(new History(DIR_CACHE.'furmedia_cache-diagnostic-'.(int)$this->context['store']))->append('diagnostic',array('status'=>$status,'route'=>$this->route,'store'=>(int)$this->context['store']));}catch(\Exception $e){}
@@ -132,13 +135,14 @@ class Bridge {
             $this->registry->set('db',$this->sql);
         }
         $this->shared=!$this->settings['cache_panel'] && !$this->resource && SharedPage::eligible($this->registry,$this->request,$this->settings);
+        $this->privateFragments=!$this->shared && !$this->settings['cache_panel'] && !$this->resource && SharedPage::privateEligible($this->registry,$this->request,$this->settings);
         $this->key = ($this->resource?'resource:':'') . (new Policy())->key($this->request,$this->shared ? SharedPage::context($this->context) : $this->context);
         $this->generation = $this->store->generation();
         if ($this->settings['mode'] === 'observe') { $this->diagnostic('OBSERVE'); return false; }
         $entry = $this->store->get($this->key);
         if (is_array($entry) && isset($entry['body'])) {
             $this->pageExpires=isset($entry['expires_at'])?(int)$entry['expires_at']:time()+PageRules::ttl($this->settings,$route);
-            $body=$this->shared ? $this->optimizeBody(SharedPage::render($entry['shared'],$this->registry)) : $entry['body'];
+            $body=$this->shared ? $this->renderFragments($entry['shared']) : ($this->privateFragments?$this->renderFragments($entry['private_fragments']):$entry['body']);
             $this->get('response')->setOutput($body);
             foreach ($entry['headers'] as $header) { $this->get('response')->addHeader($header); }
             if(isset($entry['status']) && $entry['status']===404){$this->get('response')->addHeader('HTTP/1.1 404 Not Found');}
@@ -232,6 +236,7 @@ class Bridge {
         $sessionName = (string)$this->get('config')->get('session_name');
         if (!$sessionName && version_compare(VERSION,'3.0.0.0','<')) { $sessionName = 'OCSESSID'; }
         foreach ($headers as $header) {
+            if($this->privateFragments && SharedPage::unchangedHistoryCookie($header,$this->registry,$route)){continue;}
             // Native startup renews this same session on every request. It is never persisted/replayed.
             if (in_array($header,$this->startupHeaders,true)) {
                 if ($sessionName && preg_match('/^Set-Cookie:\s*(?:' . preg_quote($sessionName,'/') . '|language|currency)=/i',$header)) { continue; }
@@ -251,8 +256,8 @@ class Bridge {
         if($status===404 && $this->shared){$this->diagnostic('BYPASS-shared-404');return;}
         $session=$this->get('session');
         $minifier=null;if($this->registry->has('journal3') && class_exists('Journal3\\Utils\\Min')){$journalDefer=(bool)$this->get('journal3')->get('performanceJSDefer');$journalMin=(bool)$this->get('journal3')->get('performanceHTMLMinify');$minifier=function($fragment)use($journalDefer,$journalMin){if($journalMin){$fragment=\Journal3\Utils\Min::minifyHTML($fragment);}return $journalDefer?str_replace('<script type="text/javascript"','<script type="text/javascript/defer"',$fragment):$fragment;};}
-        $fragmentReason='';$shared=$this->shared ? SharedPage::pack($body,$this->fragments,$this->get('document'),$fragmentReason,$minifier) : null;
-        if ($this->shared && !$shared) { $this->diagnostic('BYPASS-fragments'.($fragmentReason?'-'.$fragmentReason:''));return; }
+        $fragmentReason='';$shared=($this->shared || $this->privateFragments) ? SharedPage::pack($body,$this->fragments,$this->get('document'),$fragmentReason,$minifier) : null;
+        if (($this->shared || $this->privateFragments) && !$shared) { $this->diagnostic('BYPASS-fragments'.($fragmentReason?'-'.$fragmentReason:''));return; }
         $admissionBody=$shared?$shared['shell'].'</html>':$body;
         if (!(new Policy())->responseAllowed($admissionBody,$admissionHeaders,$status,(bool)$this->settings['cache_404'],$nativeCustomerToken)) { $this->diagnostic('BYPASS-response'); return; }
         if($shared && method_exists($session,'getId') && strlen($session->getId())>=8 && strpos($admissionBody,$session->getId())!==false){$this->diagnostic('BYPASS-session-in-body');return;}
@@ -260,7 +265,7 @@ class Bridge {
         $this->get('response')->setOutput($body);
         if ($this->settings['gzip'] && Delivery::gzipAllowed(isset($this->get('request')->server['HTTP_ACCEPT_ENCODING'])?$this->get('request')->server['HTTP_ACCEPT_ENCODING']:'')) { $this->get('response')->setCompression(6); }
         $currentContext=$this->context();
-        if ($shared ? (!SharedPage::eligible($this->registry,$this->request,$this->settings) || SharedPage::context($currentContext)!==SharedPage::context($this->context)) : $currentContext!==$this->context) { $this->diagnostic('BYPASS-state-change'); return; }
+        if ($this->shared ? (!SharedPage::eligible($this->registry,$this->request,$this->settings) || SharedPage::context($currentContext)!==SharedPage::context($this->context)) : $currentContext!==$this->context) { $this->diagnostic('BYPASS-state-change'); return; }
         $safe = array();
         foreach ($headers as $header) { if (preg_match('/^(Content-Type|Content-Language|Link):/i',$header)) { $safe[] = $header; } }
         $tags = array('catalog','route:' . $route);
@@ -269,7 +274,7 @@ class Bridge {
         $entry=array('body'=>$shared?'':$body,'headers'=>$safe,'tags'=>$tags,'status'=>$status,'esi'=>$this->esiUsed,'expires_at'=>time()+($status===404?$this->settings['ttl_404']:PageRules::ttl($this->settings,$route)));
         $this->pageExpires=$entry['expires_at'];
         if(!$this->shared){$tags[]='session:'.$this->context['session_id'];}
-        if ($shared) { $entry['shared']=$shared; }
+        if ($shared) { $entry[$this->shared?'shared':'private_fragments']=$shared; }
         if ($this->store->set($this->key,$entry,$status===404?$this->settings['ttl_404']:PageRules::ttl($this->settings,$this->route),$tags,$this->generation)) { $this->store->count('write'); }
         $this->get('response')->addHeader('Cache-Control: private, no-store');
         $this->get('response')->addHeader('Vary: Cookie, Accept, Accept-Encoding');

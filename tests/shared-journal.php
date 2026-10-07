@@ -17,6 +17,23 @@ $r->items['cart']->full=true;verify(!FurMedia\Cache\SharedPage::eligible($r,$q,$
 $r->items['customer']->logged=true;verify(!FurMedia\Cache\SharedPage::eligible($r,$q,$s),'customer refused');$r->items['customer']->logged=false;
 $r->items['request']->cookie['persistent_cart']='other';verify(!FurMedia\Cache\SharedPage::eligible($r,$q,$s),'unknown cookies refused');unset($r->items['request']->cookie['persistent_cart']);
 verify(!FurMedia\Cache\SharedPage::eligible($r,array('route'=>'product/product'),$s),'unapproved route refused');
+verify(!FurMedia\Cache\SharedPage::privateEligible($r,$q,$s),'private fragments require explicit routes');$s['journal_private_routes']='common/home';
+$r->items['request']->cookie['jrv']='6624';$r->items['request']->cookie['PHPSESSID']='other-native-session';
+$r->items['session']->data['journal3_history']=array(6624);$r->items['cart']->full=true;
+verify(!FurMedia\Cache\SharedPage::eligible($r,$q,$s),'occupied/private Journal session cannot share');
+verify(FurMedia\Cache\SharedPage::privateEligible($r,$q,$s),'private fragment approval retains cookie/history/cart in private context');
+$policy=new FurMedia\Cache\Policy();$request=array('uri'=>'/','route'=>'common/home','query'=>array());
+$context=array('session_id'=>'session-a','cookies'=>'jrv-a','state'=>'cart-a');
+foreach(array('session_id'=>'session-b','cookies'=>'jrv-b','state'=>'cart-b') as $field=>$value){$other=$context;$other[$field]=$value;verify($policy->key($request,$context)!==$policy->key($request,$other),'private key varies '.$field);}
+verify(!FurMedia\Cache\SharedPage::privateEligible($r,array('route'=>'checkout/checkout'),$s),'checkout not approved');
+$r->items['customer']->logged=true;verify(!FurMedia\Cache\SharedPage::privateEligible($r,$q,$s),'logged customers not enabled by private guest approval');$r->items['customer']->logged=false;
+$r->items['cart']->full=false;unset($r->items['session']->data['journal3_history'],$r->items['request']->cookie['jrv'],$r->items['request']->cookie['PHPSESSID']);
+$r->items['request']->cookie['jrv']='6624,7';$r->items['session']->data['jrv']=array(6624,7);
+verify(FurMedia\Cache\SharedPage::unchangedHistoryCookie('Set-Cookie: jrv=6624%2C7; path=/',$r,'product/product'),'exact Journal history renewal');
+verify(!FurMedia\Cache\SharedPage::unchangedHistoryCookie('Set-Cookie: jrv=7%2C6624; path=/',$r,'product/product'),'changed history cookie refused');
+verify(!FurMedia\Cache\SharedPage::unchangedHistoryCookie('Set-Cookie: other=6624%2C7; path=/',$r,'product/product'),'other cookie refused');
+verify(!FurMedia\Cache\SharedPage::unchangedHistoryCookie('Set-Cookie: jrv=6624%2C7; path=/',$r,'common/home'),'other route cookie refused');
+$r->items['session']->data['jrv']=array(7,6624);verify(!FurMedia\Cache\SharedPage::unchangedHistoryCookie('Set-Cookie: jrv=6624%2C7',$r,'product/product'),'session history mismatch refused');unset($r->items['request']->cookie['jrv'],$r->items['session']->data['jrv']);
 $reflection=new ReflectionClass('FurMedia\\Cache\\Bridge');$bridge=$reflection->newInstanceWithoutConstructor();$s['status']=1;$s['journal_filter_ids']='36';
 foreach(array('registry'=>$r,'settings'=>$s) as $key=>$value){$property=$reflection->getProperty($key);$property->setAccessible(true);$property->setValue($bridge,$value);}
 verify(!$bridge->skipDuplicateFilter('journal3/filter',array('module_id'=>36)),'AFS disabled preserves Journal filter');$r->items['config']->afs=true;

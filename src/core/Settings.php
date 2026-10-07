@@ -5,7 +5,7 @@ class Settings {
     public static function defaults() {
         return array(
             'db_archive_mb'=>2048, 'db_schedules'=>'', 'db_schedule_limit'=>1, 'search_acceleration'=>0, 'view_stats'=>0, 'pwa_assets'=>0, 'pwa_limit'=>100, 'pwa_cache_names'=>'', 'conditions'=>'', 'sql_profile'=>0, 'sql_slow_ms'=>100, 'lazy_media'=>0, 'lazy_blocks'=>'', 'custom_css'=>'', 'custom_js'=>'', 'custom_position'=>'bottom', 'replacements'=>'', 'resource_attributes'=>'', 'delay_rules'=>'', 'external_assets'=>'', 'db_auto_analyze'=>0, 'db_analyze_tables'=>'', 'module_rules'=>'', 'cache_panel'=>0, 'panel_position'=>'right', 'panel_color'=>'#152238', 'panel_text'=>'#ffffff', 'panel_font'=>13, 'timezone'=>'UTC', 'browser_images'=>31536000, 'browser_css'=>2592000, 'browser_js'=>2592000, 'browser_video'=>2592000, 'browser_pdf'=>86400, 'browser_fonts'=>31536000, 'prefetch_urls'=>'', 'preload_urls'=>'', 'compress_xml'=>0, 'compress_xhtml'=>0, 'compress_rss'=>0, 'reserve_compressed'=>0, 'warm_login'=>0, 'dynamic_widgets'=>0, 'widgets_interval'=>60, 'device_vary'=>0, 'litespeed'=>0, 'litespeed_esi'=>0, 'esi_modules'=>'', 'cache_404'=>0, 'ttl_404'=>60, 'status' => 0, 'mode' => 'observe', 'shared_routes'=>'', 'page_rules'=>'', 'include_urls'=>'', 'exclude_urls'=>'', 'logged_exclude_urls'=>'', 'backend'=>'file', 'ttl' => 300, 'max_mb' => 64,
-            'reserve_mb' => 128, 'max_entry_kb' => 1024, 'max_entries' => 2000, 'journal' => 1, 'journal_shared'=>0, 'journal_filter_ids'=>'',
+            'reserve_mb' => 128, 'max_entry_kb' => 1024, 'max_entries' => 2000, 'journal' => 1, 'journal_shared'=>0, 'journal_filter_ids'=>'', 'journal_private_routes'=>'',
             'html_minify' => 0, 'lazy_images' => 0, 'lazy_iframes' => 0,
             'image_dimensions' => 0, 'webp' => 0, 'avif' => 0, 'quality' => 82,
             'css_minify' => 0, 'js_minify' => 0, 'extract_js'=>0, 'script_position'=>'native', 'script_allow'=>'', 'defer_js' => 0, 'delay_js'=>0, 'delay_allow'=>'',
@@ -37,6 +37,7 @@ class Settings {
         if (!in_array($out['mode'], array('observe','session','shared'), true)) { $out['mode'] = 'observe'; }
         if(count(self::lines($out['journal_filter_ids']))>20){throw new \InvalidArgumentException('Approve at most twenty Journal filter instances');}
         foreach(self::lines($out['journal_filter_ids']) as $id){if(!preg_match('/^[1-9][0-9]{0,5}$/D',$id)){throw new \InvalidArgumentException('Journal filter IDs must be positive numeric IDs');}}
+        foreach(self::lines($out['journal_private_routes']) as $route){if(!in_array($route,array('common/home','product/category','product/product','product/manufacturer','product/manufacturer/info','information/information'),true)){throw new \InvalidArgumentException('Private Journal fragments require an approved native catalog route');}}
         Drivers::load(); if (!array_key_exists($out['backend'],Drivers::choices())) { $out['backend']='file'; }
         if(!in_array($out['script_position'],array('native','top','bottom'),true)){$out['script_position']='native';}
         $out['warm_interval']=max(60,min(86400,$out['warm_interval']));

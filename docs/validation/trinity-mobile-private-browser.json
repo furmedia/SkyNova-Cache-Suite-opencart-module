@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-07T23:23:40.690Z",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "existingBrowserCartPreserved": true,
+  "cache": "HIT",
+  "scope": "session-fragments",
+  "nativeTiming": "skynova-header;dur=263.12, skynova-footer;dur=57.45",
+  "ttfbMs": 433.603
+}

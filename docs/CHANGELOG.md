@@ -1,3 +1,10 @@
+# 0.7.2 — Cache pentru vizite mobile reale
+
+- Cache privat Journal 3 pe rute de catalog aprobate, păstrând toate cookie-urile, istoricul și starea coșului în cheia sesiunii. Antetul/subsolul și tokenurile se regenerează; coșul/checkout-ul rămân native. Clienții autentificați nu sunt activați prin această opțiune.
+- Reînnoirea cookie-ului Journal jrv permite memorarea paginii de produs numai când valoarea cookie-ului și istoricul sesiunii sunt exact neschimbate. Cookie-ul nu se persistă/retrimite din cache; orice schimbare rămâne refuzată.
+- Diagnostic X-SkyNova-Cache-Scope și Server-Timing pentru fragmentele dinamice, numai cu debug activ.
+- TrinityConcept: 34/34 probe mobile trecute; browser Android 390px cu coșul existent HIT privat, TTFB 433,6 ms. Dovezi și limite în COMPATIBILITY.md.
+
 # 0.7.1 — Comenzi globale în administrare
 
 - Cache comun Journal 3 / OC3 aprobat pe rute, antet/subsol final delimitate în șablon și regenerate; tokenuri Back in Stock eliminate din intrările partajate.

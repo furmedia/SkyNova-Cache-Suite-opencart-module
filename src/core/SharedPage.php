@@ -1,9 +1,25 @@
 <?php
 namespace FurMedia\Cache;
-/** Standard-theme guest shell; header/footer are rendered anew in the current native session. */
+/** Catalog shell; header/footer are rendered anew in the current native session. */
 class SharedPage {
     public static function marker($name){return '<template data-skynova-fragment="'.$name.'"></template>';}
     public static function stripMarkers($body){foreach(array('header-start','header-end','footer-start','footer-end') as $name){$body=str_replace(self::marker($name),'',$body);}return $body;}
+    public static function privateEligible($registry,array $request,array $settings) {
+        // Unknown cookies/history stay in the full private key; they are never ignored for sharing.
+        $config=$registry->get('config');$customer=$registry->get('customer');
+        return $settings['mode']!=='observe' && $customer && !$customer->isLogged() && $registry->has('journal3') && $config->get('config_theme')==='journal3'
+            && defined('VERSION') && version_compare(VERSION,'3.0.0.0','>=') && version_compare(VERSION,'4.0.0.0','<')
+            && in_array($request['route'],Settings::lines($settings['journal_private_routes']),true);
+    }
+    public static function unchangedHistoryCookie($header,$registry,$route) {
+        // Journal renews jrv on every product visit. Ignore only an exact no-op renewal;
+        // the cookie is not stored or replayed, and private keys still include its value.
+        if($route!=='product/product' || !preg_match('/^Set-Cookie:\s*jrv=([^;]*)/i',$header,$match)){return false;}
+        $value=rawurldecode($match[1]);$request=$registry->get('request');$session=$registry->get('session');
+        return preg_match('/^[1-9][0-9]{0,9}(?:,[1-9][0-9]{0,9}){0,19}$/D',$value)
+            && isset($request->cookie['jrv'],$session->data['jrv']) && is_string($request->cookie['jrv']) && is_array($session->data['jrv'])
+            && $request->cookie['jrv']===$value && implode(',',$session->data['jrv'])===$value;
+    }
     public static function eligible($registry,array $request,array $settings) {
         $customer=$registry->get('customer');$cart=$registry->get('cart');
         if(!$customer || !$cart || $customer->isLogged() || $cart->hasProducts()){return false;}
@@ -60,15 +76,16 @@ class SharedPage {
         if(!(new Policy())->responseAllowed(json_encode($metadata).'</html>',array(),200)){$reason='metadata-policy';return null;}
         return array('shell'=>$shell,'document'=>$metadata);
     }
-    public static function render(array $entry,$registry) {
+    public static function render(array $entry,$registry,&$timings=null) {
         if (!isset($entry['shell'],$entry['document'])) { throw new \RuntimeException('Invalid shared entry'); }
         $doc=$registry->get('document');$m=$entry['document'];
         foreach(array('Title','Description','Keywords') as $field){$setter='set'.$field;$doc->$setter($m[$field]);}
         foreach($m['Links'] as $link){$doc->addLink($link['href'],$link['rel']);}
         foreach($m['Styles'] as $style){$doc->addStyle($style['href'],$style['rel'],$style['media']);}
         foreach($m['scripts'] as $position=>$scripts){foreach($scripts as $script){$doc->addScript($script,$position);}}
-        $header=$registry->get('load')->controller('common/header');
+        $start=microtime(true);$header=$registry->get('load')->controller('common/header');$middle=microtime(true);
         $footer=$registry->get('load')->controller('common/footer');
+        $timings=array('header'=>round(1000*($middle-$start),2),'footer'=>round(1000*(microtime(true)-$middle),2));
         if (!is_string($header) || !$header || !is_string($footer) || !$footer) { throw new \RuntimeException('Native fragments unavailable'); }
         return str_replace(array('<!--skynova-dynamic-header-->','<!--skynova-dynamic-footer-->'),array($header,$footer),$entry['shell']);
     }
