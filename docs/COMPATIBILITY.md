@@ -28,7 +28,7 @@ Benchmark istoric 0.1.0 (nu remăsurat pentru 0.3.0): 12 cereri măsurate per va
 
 Testele nucleului pe PHP vechi nu înseamnă că orice versiune OpenCart/Journal rulează pe acel PHP. Respectați cerințele fiecărei platforme. OC1.5 și OC2.0–2.2 nu sunt suportate de instalatoarele actuale. OC2.3 și OC4.1 nu au încă test integral cu DB și browser. OC2.3 installerul vechi cere un mod SQL MYSQL40 care nu există în MySQL 8.4 local; nu am modificat installerul pentru a pretinde compatibilitate. OC4.0.2.3 are test HTTP cu DB reală. Fixture-ul Windows OC4 suprascrie session_path la / în configurația locală deoarece dirname pe Windows produce un cookie path incorect pentru rădăcina site-ului; sursa de referință și pachetul modulului nu sunt modificate de acest workaround.
 
-Referința de magazin furnizată este TrinityConcept, OpenCart 3.0.5.1 și Journal 3.2.10, conform inventarului proiectului. Nu s-au făcut modificări sau teste de performanță pe producție. Accesul disponibil nu a fost folosit pentru a modifica magazinul live.
+Referința de magazin furnizată este TrinityConcept, OpenCart 3.0.5.1 și Journal 3.2.10. Descrierile istorice de mai sus privesc staging-ul; activarea și probele live ulterioare sunt documentate separat mai jos.
 
 Acceptanța înainte de producție trebuie să includă Journal activat pe staging: pagină produs/categorie/căutare, filtre și AJAX, două sesiuni independente, clienți autentificați, monede/limbi/taxe, coș, cupoane, checkout, comenzi de test fără livrare/plată reală, PersistentCart și celelalte extensii instalate. Testați editarea prețului/stocului și invalidarea; comparați Lighthouse înainte/după în aceleași condiții.
 
@@ -50,3 +50,29 @@ Politica statică de browser cache verificată pe un Apache 2.4.66 real, pornit 
 - Surse de dovezi: validation/advanced-db.json, validation/advanced-http.json, validation/advanced-oc4-http.json, validation/php-matrix.json, validation/browser-premium.json, validation/completion-http.json, validation/completion-oc4-http.json.
 
 Importul extern este testat cu transport simulat și SHA256; rețeaua reală CDN nu a fost utilizată. APCu/Memcache: fallback verificat, servicii native indisponibile local. Programarea ANALYZE a fost verificată direct pe DB locală; CRON HTTPS de producție nu a fost executat. Nu există dovadă de accelerare pe catalogul real sau verificare frontend Journal activat.
+
+
+## Activare TrinityConcept — 8 octombrie 2026
+
+- SkyNova activat în mod `session`, protecție Journal activă. Cache de modele activat numai pentru cele șase citiri aprobate de categorie/informație/producător; CSS/JS, SQL arbitrar și integrarea CDN nu au fost activate automat.
+- Matrix: 293 fișiere PHP fără erori pe PHP 5.6/7.4/8.2/8.3, 313 aserțiuni ale nucleului fiecare; cinci fixture-uri native OpenCart trecute.
+- 323 verificări HTTP locale OC3/OC4 trecute: 51 store, 12 shared, 4 multistore, câte 23 data / 73 completion / 15 advanced / 17 suite pe OC3 și OC4. Testele locale cu conturi reale fixture nu înlocuiesc acceptanța conturilor live Journal.
+- Live: 45 verificări, 36 trecute, 9 netrecute. Patru așteptări de HIT HTML nu s-au realizat; cinci cereri de categorie au depășit timeout-ul de 20 secunde. Rerulare categorie: HTTP 200 în 22,273 secunde, 4.821.306 bytes HTML, BYPASS-size. Nu se pretinde accelerare HTML a magazinului live.
+- Homepage: BYPASS-response, token CSRF în blocul `extension/module/back_in_stock/subscribe` (`data-bis-csrf`). Protecția împiedică persistența acelui token în cache HTML. Categoria depășește și limita implicită de 1 MiB/pagină.
+- Sesiuni guest separate: două Android, iPhone și desktop; produs/căutare/404, AJAX, query necunoscut, login/coș excluse, adăugare produs 6624 în coș propriu, izolare față de al doilea Android, intrare checkout fără comandă/plată și golire coș trecute. Nu s-au creat conturi, comenzi sau plăți.
+- Cache de modele: patru cereri HTTP 200; intrările s-au stabilizat și metadatele au rămas neschimbate la cererile 3/4. Bara a raportat ulterior 102 intrări (0,5 MB), invalidate prin comanda de catalog. Acestea sunt date, nu HIT-uri HTML.
+- Browser: homepage la 390 px, produs în emulare Android 390 px, categorie și filtru Bile/mărgele aplicat; fără Fatal error în paginile inspectate.
+- Google PageSpeed din modul: HTTP 429; nu există scor nou verificat.
+- Dovezi: validation/trinity-live-http.json, validation/trinity-model-http.json, validation/activation-http-matrix.json, validation/php-matrix.json, validation/trinity-product-android-active.jpg.
+
+La prima etapă rămâneau fragmentul Back in Stock, reutilizarea între vizitatori și categoria supradimensionată. Corecțiile și probele ulterioare sunt documentate mai jos. Acceptanța live cu cont de test, PersistentCart, cupoane, limbi/monede/taxe și toate metodele checkout nu este încheiată. Cloudflare/S3/Redis/LSCache Enterprise necesită serviciile reale configurate înainte de a putea declara integrarea testată.
+
+## Corecții și retestare TrinityConcept — 8 octombrie 2026
+
+- Modul activ în `shared`, numai `common/home` și `product/category`, adaptor Journal 3 pe OC3 aprobat explicit. Antetul/subsolul se regenerează pentru fiecare sesiune; tokenul Back in Stock nu este persistat în partea comună. Coșurile, clienții autentificați și sesiunile personalizate sunt excluse.
+- 45/45 verificări live și 13/13 verificări de partajare trecute. Două sesiuni independente Android primesc HIT, cu tokenuri CSRF diferite și validate față de propriul endpoint. Categoria păstrează AFS, nu mai conține filtrul Journal duplicat 36 și nu expune markerii interni.
+- Categoria în proba finală: MISS 8,596 secunde, HIT 0,537 secunde, alt telefon/sesiune nouă HIT 0,551 secunde. Homepage la al doilea telefon: HIT 0,572 secunde. Sunt durate HTTP ale acestor probe, nu scoruri PageSpeed/Core Web Vitals sau garanții generale.
+- Instanța duplicată Journal 36 este omisă numai dacă AFS este activ în mod integrat. Filtrul AFS Bile/mărgele a fost verificat în browser. Preîncălzirea manuală poate reexecuta paginile reușite fără a aștepta intervalul CRON; limita lotului, pauza și retry-ul erorilor rămân aplicate.
+- PHP 5.6/7.4/8.2/8.3: 298 fișiere fără erori și 326 aserțiuni ale nucleului fiecare; încă 20 pentru admiterea Journal, 14 pentru navigare și 48 pentru linkurile autentificate fiecare. Fixture-uri native OC2.3/3/4 trecute; acestea nu certifică toate magazinele Journal.
+- Google PageSpeed încă răspunde HTTP 429. Mesajul explică limita; retry-ul este oprit cinci minute și raportul anterior este păstrat. Este necesară o cotă Google disponibilă/cheie API configurată pentru un scor nou real.
+- Dovezi: `validation/trinity-live-after-fixes.json`, `validation/trinity-shared-after-fixes.json`, `validation/php-matrix.json`, `validation/trinity-toolbar-after-fixes.png`. Nu au fost create conturi, comenzi sau plăți.

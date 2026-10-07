@@ -21,6 +21,9 @@ check(is_resource($lease) && $two->lease('same')===false,'concurrent cache popul
 flock($lease,LOCK_UN);fclose($lease);$lease=$two->lease('same');check(is_resource($lease),'lease released');flock($lease,LOCK_UN);fclose($lease);
 $one->count('hit');check(isset($one->stats()['daily'][gmdate('Y-m-d')]['hit']),'daily counters stored');
 $history=new FurMedia\Cache\History($tmp.'/history');for($i=0;$i<35;$i++){$history->append('pagespeed',array('score'=>$i));}
+$quotaCalls=0;$quotaClient=new FurMedia\Cache\PageSpeed(function($url)use(&$quotaCalls){$quotaCalls++;throw new Exception('Fetch failed (HTTP 429)');},$tmp.'/pagespeed-quota');
+for($i=0;$i<2;$i++){$quotaRejected=false;try{$quotaClient->analyze('https://shop.example/');}catch(Exception $e){$quotaRejected=strpos($e->getMessage(),'HTTP 429')!==false;}check($quotaRejected,'PageSpeed quota surfaced clearly');}
+check($quotaCalls===1,'PageSpeed quota cooldown prevents repeated Google calls');
 check(count($history->rows('pagespeed'))===30,'bounded history');check($history->rows('pagespeed')[0]['report']['score']===5,'old reports evicted');
 $time=1000;$calls=array();$failOnce=true;
 $fetch=function($url)use(&$calls,&$failOnce){$calls[]=$url;if(strpos($url,'sitemap')!==false){return array('body'=>'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://shop.example/item</loc></url><url><loc>https://other.example/private</loc></url></urlset>');}if($failOnce){$failOnce=false;throw new Exception('retry');}return array('body'=>'ok');};
@@ -31,8 +34,13 @@ $config=array('paths'=>array(),'sitemaps'=>array('/sitemap.xml'),'limit'=>10,'in
 $r=$queue->run($config);check($r['total']===2 && $r['fetched']===1,'sitemap discovers same-origin page');
 $r=$queue->run($config);check($r['failed']===1,'transient failure tracked');
 $r=$queue->run($config);check($r['fetched']===0 && $r['failed']===0,'retry backoff respected');
+$forcedRetry=$config;$forcedRetry['force']=true;$r=$queue->run($forcedRetry);check($r['fetched']===0 && $r['failed']===0,'manual refresh does not hammer failed jobs or sitemaps');
 $time+=31;$queue=new FurMedia\Cache\WarmQueue($tmp.'/queue','https://shop.example',$fetch,function()use(&$time){return $time;});
 $r=$queue->run($config);check($r['fetched']===1 && $r['remaining']===0,'queue resumes across instances');
+$r=$queue->run($config);check($r['fetched']===0,'scheduled warming keeps interval after success');
+$manual=$config;$manual['force']=true;$manual['limit']=1;
+$r=$queue->run($manual);check($r['fetched']===1 && $r['failed']===0,'manual warming refreshes completed page before interval');
+$queue->pause(true);$r=$queue->run($manual);check($r['paused'] && $r['fetched']===0,'manual warming respects pause');$queue->pause(false);
 $bad=false;try{$queue->sitemap('<!DOCTYPE x [<!ENTITY e SYSTEM "file:///secret">]><urlset/>');}catch(Exception $e){$bad=true;}check($bad,'sitemap external entities refused');
 putenv('SKYNOVA_CF_ZONE=0123456789abcdef0123456789abcdef');putenv('SKYNOVA_CF_TOKEN=fixture-not-a-real-token');
 $api=new FurMedia\Cache\Cloudflare(function($method,$url,$body,$headers){check($method==='POST' && strpos($url,'https://api.cloudflare.com/client/v4/zones/')===0,'fixed Cloudflare endpoint');check(json_decode($body,true)['files']===array('https://shop.example/item'),'Cloudflare exact URL payload');return array('body'=>'{"success":true}');});
@@ -48,6 +56,16 @@ $entry=FurMedia\Cache\SharedPage::pack($header.'<main>Public product</main>'.$fo
 check(is_array($entry) && strpos($entry['shell'],'PERSONAL-A')===false,'shared shell excludes dynamic personal fragments');
 check(FurMedia\Cache\SharedPage::pack($header.'<input name="token">'.$footer,array('common/header'=>$header,'common/footer'=>$footer),new DocumentFixture())===null,'shared shell with token refused');
 check(FurMedia\Cache\SharedPage::pack($header.'public'.$footer,array(),new DocumentFixture())===null,'missing fragments refuse sharing');
+$h="<html>\n<body><header>Fresh</header>";$f="<footer data-bis-csrf=\"".str_repeat('b',48)."\">Fresh</footer>\n</body></html>";$nativeMinifier=function($html){return str_replace("\n",'',$html);};$minified=$nativeMinifier($h.'<main>Public</main>'.$f);$why='';
+$packed=FurMedia\Cache\SharedPage::pack($minified,array('common/header'=>$h,'common/footer'=>$f),new DocumentFixture(),$why,$nativeMinifier);
+check(is_array($packed) && strpos($packed['shell'],'data-bis-csrf')===false && strpos($packed['shell'],str_repeat('b',48))===false,'native minification still excludes footer tokens');
+check(FurMedia\Cache\SharedPage::pack($nativeMinifier($h.'<input name="csrf" value="private">'.$f),array('common/header'=>$h,'common/footer'=>$f),new DocumentFixture(),$why,$nativeMinifier)===null,'minified shell with unknown token refused');
+check(FurMedia\Cache\SharedPage::pack($minified.'<header>Fresh</header>',array('common/header'=>'<header>Fresh</header>','common/footer'=>$f),new DocumentFixture(),$why,$nativeMinifier)===null,'ambiguous fragment matches refuse sharing');
+$marked=FurMedia\Cache\SharedPage::marker('header-start').$h.FurMedia\Cache\SharedPage::marker('header-end').'<main>Public</main>'.FurMedia\Cache\SharedPage::marker('footer-start').$f.FurMedia\Cache\SharedPage::marker('footer-end');
+$packed=FurMedia\Cache\SharedPage::pack($marked,array('_marked'=>true,'common/header'=>'changed','common/footer'=>'changed'),new DocumentFixture(),$why);
+check(is_array($packed) && strpos($packed['shell'],'data-bis-csrf')===false && strpos($packed['shell'],'data-skynova-fragment')===false,'final template boundaries exclude transformed fragments');
+check(FurMedia\Cache\SharedPage::stripMarkers($marked)===$h.'<main>Public</main>'.$f,'native response markers removed');
+check(FurMedia\Cache\SharedPage::pack($marked.FurMedia\Cache\SharedPage::marker('header-start'),array('_marked'=>true),new DocumentFixture(),$why)===null,'duplicate template boundaries refused');
 $delays=FurMedia\Cache\Settings::normalize(array('delay_js'=>1,'delay_allow'=>'catalog/view/app.js'));
 $a=new FurMedia\Cache\Assets($tmp.'/shop',$tmp.'/shop/image/cache/furmedia_cache','https://shop.example/',$delays);
 $html='<html><head></head><body><script src="catalog/view/app.js"></script><script type=\'module\' src="catalog/view/app.js"></script></body></html>';

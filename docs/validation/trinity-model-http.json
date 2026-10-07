@@ -1,0 +1,26 @@
+[
+    {
+        "request": 1,
+        "http": 200,
+        "model_entries": 8,
+        "unchanged_from_previous": 0
+    },
+    {
+        "request": 2,
+        "http": 200,
+        "model_entries": 10,
+        "unchanged_from_previous": 8
+    },
+    {
+        "request": 3,
+        "http": 200,
+        "model_entries": 10,
+        "unchanged_from_previous": 10
+    },
+    {
+        "request": 4,
+        "http": 200,
+        "model_entries": 10,
+        "unchanged_from_previous": 10
+    }
+]

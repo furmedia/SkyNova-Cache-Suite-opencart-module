@@ -1,0 +1,131 @@
+{
+  "at": "2026-10-07T22:55:41+00:00",
+  "requests": [
+    {
+      "visitor": "a",
+      "path": "index.php?route=common/home",
+      "http": 200,
+      "cache": "HIT",
+      "seconds": 1.004877,
+      "bytes": 397498
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=common/home",
+      "http": 200,
+      "cache": "HIT",
+      "seconds": 0.579562,
+      "bytes": 397498
+    },
+    {
+      "visitor": "b",
+      "path": "index.php?route=common/home",
+      "http": 200,
+      "cache": "HIT",
+      "seconds": 0.572083,
+      "bytes": 397498
+    },
+    {
+      "visitor": "b",
+      "path": "index.php?route=common/home",
+      "http": 200,
+      "cache": "HIT",
+      "seconds": 0.576045,
+      "bytes": 397498
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=extension/module/back_in_stock/sessionToken",
+      "http": 200,
+      "cache": "BYPASS-sensitive-route",
+      "seconds": 0.103412,
+      "bytes": 59
+    },
+    {
+      "visitor": "b",
+      "path": "index.php?route=extension/module/back_in_stock/sessionToken",
+      "http": 200,
+      "cache": "BYPASS-sensitive-route",
+      "seconds": 0.115463,
+      "bytes": 59
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=product/category&path=64",
+      "http": 200,
+      "cache": "MISS",
+      "seconds": 8.596401,
+      "bytes": 881732
+    },
+    {
+      "visitor": "a",
+      "path": "index.php?route=product/category&path=64",
+      "http": 200,
+      "cache": "HIT",
+      "seconds": 0.53683,
+      "bytes": 804985
+    },
+    {
+      "visitor": "b",
+      "path": "index.php?route=product/category&path=64",
+      "http": 200,
+      "cache": "HIT",
+      "seconds": 0.550618,
+      "bytes": 804985
+    }
+  ],
+  "checks": [
+    {
+      "name": "complete HTML a",
+      "passed": true
+    },
+    {
+      "name": "complete HTML a",
+      "passed": true
+    },
+    {
+      "name": "complete HTML b",
+      "passed": true
+    },
+    {
+      "name": "complete HTML b",
+      "passed": true
+    },
+    {
+      "name": "different phone gets shared HIT",
+      "passed": true
+    },
+    {
+      "name": "fresh footer tokens differ",
+      "passed": true
+    },
+    {
+      "name": "footer token belongs to current session a",
+      "passed": true
+    },
+    {
+      "name": "footer token belongs to current session b",
+      "passed": true
+    },
+    {
+      "name": "category complete a",
+      "passed": true
+    },
+    {
+      "name": "category complete a",
+      "passed": true
+    },
+    {
+      "name": "category complete b",
+      "passed": true
+    },
+    {
+      "name": "different phone gets category HIT",
+      "passed": true
+    },
+    {
+      "name": "shared entries contain no visitor footer tokens",
+      "passed": true
+    }
+  ]
+}

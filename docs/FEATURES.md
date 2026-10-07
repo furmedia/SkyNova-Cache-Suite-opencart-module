@@ -4,6 +4,10 @@ Completări 0.6: APCu/Memcache cu fallback, condiții GET/config/sesiune, multim
 
 Versiune pentru staging. Completările au cod și teste locale; backendul LiteSpeed/ESI și compatibilitatea completă Journal nu sunt certificate. Panoul este original SkyNova. Arhiva NitroPackIO disponibilă este conectorul cloud, nu vechiul Nitro Cache local din descriere.
 
+Actualizarea 0.7.1 include cache comun pentru vizitatori anonimi Journal 3 pe OC3, activat explicit pe rute aprobate. Antetul/subsolul final sunt delimitate în șablon și regenerate la fiecare HIT; tokenul Binoclo Back in Stock nu este memorat. Coșul, clienții, favoritele, cupoanele, cookie-urile și stările necunoscute refuză partajarea. Pentru TrinityConcept este recunoscut numai markerul temporal verificat al politicii locale de sesiune. Nu este o certificare pentru toate extensiile Journal.
+
+Preîncălzirea manuală reîncarcă paginile deja finalizate chiar înaintea intervalului CRON; pauza, blocarea concurenței, limita lotului și backoff-ul erorilor rămân active. ID-urile de filtre Journal înlocuite pot fi aprobate individual, numai când AFS este activ în modul integrat. PageSpeed afișează clar HTTP 429 și aplică o pauză de cinci minute; scorul necesită acces real la serviciul Google.
+
 | Completare 0.4 | Comportament | Condiții și probe |
 |---|---|---|
 | Procesare toate imaginile | Scanare incrementală în image, exceptând cache/symlinks; JPEG/PNG, WebP/AVIF și variante responsive; start/continuare/anulare/status în admin, reluare prin CRON | Originalele intacte; fișiere prea mari, nesuportate, deja mai mici sau fără GD sunt păstrate. Ferestre de 1.000 fișiere, maximum 10.000 directoare în așteptare, limite de disc existente. Teste core și HTTP |

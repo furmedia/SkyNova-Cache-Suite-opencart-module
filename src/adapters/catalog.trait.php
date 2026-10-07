@@ -7,12 +7,18 @@ trait FurMediaCatalogActions {
     public function before(&$route, &$args) {
         if (!$this->config->get('module_furmedia_cache_status')) { return; }
         try {
+            if($this->fmBridge()->skipDuplicateFilter($route,$args)){$route=self::FM_ROUTE.'/emptyFragment';return;}
             if ($this->fmBridge()->before($route)) {
                 $route = self::FM_ROUTE . (version_compare(VERSION,'4.0.0.0','>=') ? '.cached' : '/cached');
                 if (version_compare(VERSION,'4.0.0.0','>=') && version_compare(VERSION,'4.1.0.0','<')) { return new \Opencart\System\Engine\Action($route); }
                 // OC2/3 router and OC4.1 framework construct the Action using the mutated route.
             }
         } catch (\Exception $e) { $this->log->write('FurMedia Cache: page lookup failed, native rendering preserved'); } catch (\Throwable $e) { $this->log->write('FurMedia Cache: page lookup error, native rendering preserved'); }
+    }
+    public function emptyFragment(){return '';}
+    public function viewFragments(&$route,&$data,&$output=null){
+        if(!$this->config->get('module_furmedia_cache_status')){return;}
+        try{$this->fmBridge()->viewFragments($route,$data);}catch(\Exception $e){}catch(\Throwable $e){}
     }
     public function after(&$route, &$args, &$output = null) {
         if (!$this->config->get('module_furmedia_cache_status')) { return; }

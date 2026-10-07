@@ -1,3 +1,17 @@
+# 0.7.1 — Comenzi globale în administrare
+
+- Cache comun Journal 3 / OC3 aprobat pe rute, antet/subsol final delimitate în șablon și regenerate; tokenuri Back in Stock eliminate din intrările partajate.
+- Preîncălzire manuală forțată a paginilor finalizate, fără ocolirea pauzei/backoff-ului/limitării concurenței.
+- Omitere explicită a instanțelor de filtru Journal înlocuite de AFS activ integrat; niciun filtru nu este omis implicit.
+- Mesaj PageSpeed HTTP 429 și pauză de cinci minute după limitarea Google.
+
+- Acces SkyNova Cache Suite din meniul stâng și din bara superioară, prin evenimente native OpenCart.
+- Stare, statistici, invalidare pe tipuri, colectarea intrărilor expirate, arhivare recuperabilă a cache-ului nativ/imaginilor și preîncălzire cu pauză/reluare.
+- Comenzile folosesc POST, nonce de sesiune și permisiuni; bara operează magazinul principal și limitează preîncălzirea la maximum trei URL-uri pe clic.
+- Corecție pentru URL-urile de formular/link escapate de două ori.
+- Linkurile de secțiune păstrează URL-ul autentificat al modulului; `<base href=".../admin/">` nu mai trimite navigarea internă la admin fără token. Cele 21 de linkuri au fost verificate live; 48 verificări de regresie pentru token/user_token și multistore pe PHP 5.6/7.4/8.2/8.3.
+- Prima verificare live TrinityConcept OC3.0.5.1/PHP8.3.32/Journal3.2.10 a verificat navigarea globală în Observare. Activarea și corecțiile ulterioare sunt documentate în COMPATIBILITY.md.
+
 # 0.6.0 — Reguli avansate și mentenanță DB, development preview
 
 - Adaptoare APCu/Memcache cu fallback pe disc și aceleași garduri de invalidare.

@@ -26,7 +26,7 @@ trait FurMediaAdminActions {
                 $post = $this->request->post;
                 if (!$this->user->hasPermission('modify',self::FM_ROUTE) || !isset($post['fm_nonce']) || !is_string($post['fm_nonce']) || !hash_equals($this->session->data['fm_cache_nonce'],$post['fm_nonce'])) { throw new \RuntimeException('Nu ai permisiune sau sesiunea formularului a expirat.'); }
                 $op = isset($post['operation']) ? $post['operation'] : '';
-                if ($op === 'save' || $op === 'import') {
+                if ($op === 'navigation_install') { $this->fmEvents(false);$this->fmEvents(true);$this->fmNavEvents(true); $message='Meniurile și evenimentele SkyNova au fost înregistrate. Reîncarcă pagina.'; } elseif ($op === 'save' || $op === 'import') {
                     $input = $op === 'import' ? json_decode(html_entity_decode(isset($post['import_json'])?$post['import_json']:'',ENT_QUOTES,'UTF-8'),true) : (isset($post['settings'])?$post['settings']:array());
                     if (!is_array($input)) { throw new \InvalidArgumentException('Configurație JSON invalidă.'); }
                     if ($op === 'save') { foreach ($input as $k=>$v) { if (is_string($v)) { $input[$k] = html_entity_decode($v,ENT_QUOTES,'UTF-8'); } } }
@@ -77,7 +77,7 @@ trait FurMediaAdminActions {
                 } elseif (in_array($op,array('warm_run','warm_pause','warm_resume'),true)) {
                     $queue=new \FurMedia\Cache\WarmQueue(DIR_CACHE.'furmedia_cache-jobs-'.hash('sha256',$storeUrl),$storeUrl);
                     if($op==='warm_pause'){$queue->pause(true);$message='Preîncălzirea a fost oprită.';}elseif($op==='warm_resume'){$queue->pause(false);$message='Preîncălzirea poate continua.';}
-                    else{$result=$queue->run(array('paths'=>\FurMedia\Cache\Settings::lines($s['warm_urls']),'sitemaps'=>\FurMedia\Cache\Settings::lines($s['warm_sitemaps']),'variants'=>$s['warm_variants'],'limit'=>$s['warm_limit'],'interval'=>$s['warm_interval']));$message='Preîncălzire: '.(int)$result['fetched'].' cereri reușite, '.(int)$result['failed'].' erori.';(new \FurMedia\Cache\History(DIR_CACHE.'furmedia_cache-history-'.$storeId))->append('warm',$result);}
+                    else{$paths=\FurMedia\Cache\Settings::lines($s['warm_urls']);if(!$paths){$paths=array('/');}$result=$queue->run(array('paths'=>$paths,'sitemaps'=>\FurMedia\Cache\Settings::lines($s['warm_sitemaps']),'variants'=>$s['warm_variants'],'limit'=>$s['warm_limit'],'interval'=>$s['warm_interval'],'force'=>true));$message='Preîncălzire: '.(int)$result['fetched'].' cereri reușite, '.(int)$result['failed'].' erori.';(new \FurMedia\Cache\History(DIR_CACHE.'furmedia_cache-history-'.$storeId))->append('warm',$result);}
                 } elseif ($op==='integrations_save') {
                     if(!\FurMedia\Cache\Paths::privateStorage(DIR_CACHE,dirname(rtrim(DIR_APPLICATION,'/\\')))){throw new \RuntimeException('Service configuration requires storage outside the web root');}
                     $values=isset($post['services'])?$post['services']:array();$remove=isset($post['remove_services'])?$post['remove_services']:array();
@@ -152,16 +152,66 @@ trait FurMediaAdminActions {
         $header=$this->load->controller('common/header'); $left=$this->load->controller('common/column_left'); $footer=$this->load->controller('common/footer');
         $this->response->setOutput($header . $left . \FurMedia\Cache\Admin::render($data) . $footer);
     }
+    private function fmNavEvents($install) {
+        $legacy=version_compare(VERSION,'3.0.0.0','<');$v4=version_compare(VERSION,'4.0.0.0','>=');$model=$legacy?'extension/event':'setting/event';
+        $this->load->model($model);$property='model_'.str_replace('/','_',$model);$events=$this->{$property};
+        if($legacy){$events->deleteEvent('skynova_navigation');}else{$events->deleteEventByCode('skynova_navigation');}
+        if(!$install){return;}$sep=$v4?'.':'/';
+        foreach(array('admin/controller/common/header/after'=>'toolbar','admin/view/common/column_left/before'=>'navigation') as $trigger=>$method){
+            if($v4){$events->addEvent(array('code'=>'skynova_navigation','description'=>'SkyNova admin navigation','trigger'=>$trigger,'action'=>self::FM_ROUTE.$sep.$method,'status'=>1,'sort_order'=>10001));}
+            else{$events->addEvent('skynova_navigation',$trigger,self::FM_ROUTE.$sep.$method,1,10001);}
+        }
+    }
+    public function navigation(&$route,&$data,&$code=null) {
+        if(!$this->user->hasPermission('access',self::FM_ROUTE)||!isset($data['menus'])||!is_array($data['menus'])){return;}
+        foreach($data['menus'] as $menu){if(isset($menu['id'])&&$menu['id']==='menu-skynova-cache'){return;}}
+        $name=version_compare(VERSION,'3.0.0.0','>=')?'user_token':'token';if(empty($this->session->data[$name])){return;}
+        $data['menus'][]=array('id'=>'menu-skynova-cache','icon'=>'fa-bolt','name'=>'SkyNova Cache Suite','href'=>$this->url->link(self::FM_ROUTE,$name.'='.$this->session->data[$name],true),'children'=>array());
+    }
+    public function toolbar(&$route,&$args,&$output) {
+        if(!$this->user->hasPermission('access',self::FM_ROUTE)||!is_string($output)){return;}
+        $name=version_compare(VERSION,'3.0.0.0','>=')?'user_token':'token';if(empty($this->session->data[$name])){return;}
+        if(empty($this->session->data['fm_cache_nonce'])){$this->session->data['fm_cache_nonce']=bin2hex(\FurMedia\Cache\Entropy::bytes(24));}
+        $sep=version_compare(VERSION,'4.0.0.0','>=')?'.':'/';$query=$name.'='.$this->session->data[$name];
+        $output.=\FurMedia\Cache\Adminnav::render($this->url->link(self::FM_ROUTE,$query,true),$this->url->link(self::FM_ROUTE.$sep.'quick',$query,true),$this->session->data['fm_cache_nonce'],$this->user->hasPermission('modify',self::FM_ROUTE));
+    }
+    public function quick() {
+        $this->response->addHeader('Content-Type: application/json; charset=utf-8');$this->response->addHeader('Cache-Control: no-store');
+        try {
+            if(!$this->user->hasPermission('access',self::FM_ROUTE)){throw new \RuntimeException('Permission denied');}
+            $op=isset($this->request->post['operation'])?$this->request->post['operation']:'';
+            if($this->request->server['REQUEST_METHOD']!=='POST'||!is_string($op)||empty($this->session->data['fm_cache_nonce'])||!isset($this->request->post['fm_nonce'])||!is_string($this->request->post['fm_nonce'])||!hash_equals($this->session->data['fm_cache_nonce'],$this->request->post['fm_nonce'])){throw new \RuntimeException('Sesiune expirată. Reîncarcă pagina.');}
+            if($op!=='status'&&!$this->user->hasPermission('modify',self::FM_ROUTE)){throw new \RuntimeException('Permission denied');}
+            // Toolbar always operates on the main store, never on a caller-supplied filesystem path.
+            $this->request->get['store_id']=0;$s=$this->fmSettings();$store=new \FurMedia\Cache\CacheStore(DIR_CACHE.'furmedia_cache',$s);
+            $origin=defined('HTTPS_CATALOG')?HTTPS_CATALOG:HTTP_CATALOG;$queue=new \FurMedia\Cache\WarmQueue(DIR_CACHE.'furmedia_cache-jobs-'.hash('sha256',$origin),$origin);$message='Magazin principal';
+            $tags=array('purge_pages'=>'catalog','purge_sql'=>'sql','purge_components'=>'component','purge_resources'=>'resource');
+            if($op==='purge'){$message='SkyNova: '.(int)$store->purge().' intrări invalidate';$this->response->addHeader(\FurMedia\Cache\Litespeed::purge());}
+            elseif(isset($tags[$op])){$message='SkyNova: '.(int)$store->purge($tags[$op]).' intrări invalidate';if($op==='purge_pages'){$this->response->addHeader(\FurMedia\Cache\Litespeed::purge());}}
+            elseif($op==='gc'){$message='Intrări expirate eliminate: '.(int)$store->gc();}
+            elseif(in_array($op,array('archive_native','archive_images'),true)){
+                if(!\FurMedia\Cache\Paths::privateStorage(DIR_CACHE,dirname(rtrim(DIR_APPLICATION,'/\\')))){throw new \RuntimeException('Storage privat necesar');}
+                $r=\FurMedia\Cache\Management::archive(substr($op,8),array('native'=>DIR_CACHE,'images'=>DIR_IMAGE.'cache'),DIR_STORAGE.'skynova-maintenance');$message='Fișiere arhivate recuperabil: '.$r['moved'].' (maximum 500/pas)';
+            }elseif($op==='warm_pause'||$op==='warm_resume'){$queue->pause($op==='warm_pause');$message=$op==='warm_pause'?'Coada oprită':'Coada reluată';}
+            elseif($op==='warm_run'){
+                $paths=\FurMedia\Cache\Settings::lines($s['warm_urls']);if(!$paths){$paths=array('/');}
+                $r=$queue->run(array('paths'=>$paths,'sitemaps'=>\FurMedia\Cache\Settings::lines($s['warm_sitemaps']),'variants'=>$s['warm_variants'],'limit'=>min(3,$s['warm_limit']),'interval'=>$s['warm_interval'],'force'=>true));
+                $message=!empty($r['paused'])?'Coada este oprită':(!empty($r['busy'])?'Alt lot rulează':'URL-uri publice: '.$r['fetched'].' reușite / '.$r['failed'].' erori');
+            }elseif($op!=='status'){throw new \InvalidArgumentException('Operațiune necunoscută');}
+            $stats=$store->stats();$q=$queue->status();$state=(!$s['status']?'Dezactivat':($s['mode']==='observe'?'Observare':'Cache activ')).' · '.$store->backend().' · '.$stats['entries'].' intrări · '.round($stats['bytes']/1048576,2).' MB · HIT '.(isset($stats['hit'])?$stats['hit']:0).' · MISS '.(isset($stats['miss'])?$stats['miss']:0).' · coadă '.($q['paused']?'oprită':'activă').' / '.$q['pending'].' în așteptare';
+            $this->response->setOutput(json_encode(array('ok'=>true,'message'=>$message,'state'=>$state)));
+        }catch(\Exception $e){$this->response->addHeader('HTTP/1.1 400 Bad Request');$this->response->setOutput(json_encode(array('ok'=>false,'error'=>$e->getMessage())));}
+    }
     public function install() {
         if (!$this->user->hasPermission('modify',self::FM_ROUTE) && !$this->user->hasPermission('modify','marketplace/extension') && !$this->user->hasPermission('modify','extension/extension') && !$this->user->hasPermission('modify','extension/module')) { return; }
-        $this->fmEvents(false); $this->fmEvents(true);
+        $this->fmEvents(false); $this->fmEvents(true); $this->fmNavEvents(true);
         $this->load->model('user/user_group');
         $this->model_user_user_group->addPermission($this->user->getGroupId(),'access',self::FM_ROUTE);
         $this->model_user_user_group->addPermission($this->user->getGroupId(),'modify',self::FM_ROUTE);
     }
     public function uninstall() {
         if (!$this->user->hasPermission('modify',self::FM_ROUTE) && !$this->user->hasPermission('modify','marketplace/extension') && !$this->user->hasPermission('modify','extension/extension')) { return; }
-        $this->fmEvents(false);
+        $this->fmEvents(false); $this->fmNavEvents(false);
         $this->load->model('setting/setting'); $this->model_setting_setting->deleteSetting('module_furmedia_cache');
         $this->load->model('setting/store');foreach($this->model_setting_store->getStores() as $row){$this->model_setting_setting->deleteSetting('module_furmedia_cache',(int)$row['store_id']);}
         try { (new \FurMedia\Cache\FileStore(DIR_CACHE . 'furmedia_cache'))->purge();$this->response->addHeader(\FurMedia\Cache\Litespeed::purge()); } catch (\Exception $e) { }
@@ -181,7 +231,7 @@ trait FurMediaAdminActions {
         $this->load->model($model); $property='model_' . str_replace('/','_',$model); $events=$this->{$property};
         if (!$install) { if ($legacy) { $events->deleteEvent('furmedia_cache'); } else { $events->deleteEventByCode('furmedia_cache'); } return; }
         $separator = $v4 ? '.' : '/';
-        $list = array('admin/controller/*/before'=>self::FM_ROUTE.$separator.'profile','catalog/controller/*/before'=>self::FM_ROUTE . $separator . 'before', 'catalog/controller/*/after'=>self::FM_ROUTE . $separator . 'after', 'admin/model/catalog/*/after'=>self::FM_ROUTE . $separator . 'invalidate', 'admin/model/setting/*/after'=>self::FM_ROUTE . $separator . 'invalidate', 'admin/model/design/*/after'=>self::FM_ROUTE . $separator . 'invalidate', 'admin/model/journal3/*/after'=>self::FM_ROUTE . $separator . 'invalidate', 'catalog/model/checkout/order/*/after'=>self::FM_ROUTE . $separator . 'invalidate', 'catalog/model/checkout/order.*/after'=>self::FM_ROUTE . $separator . 'invalidate');
+        $list = array('admin/controller/*/before'=>self::FM_ROUTE.$separator.'profile','catalog/controller/*/before'=>self::FM_ROUTE . $separator . 'before', 'catalog/controller/*/after'=>self::FM_ROUTE . $separator . 'after', 'catalog/view/*/before'=>self::FM_ROUTE . $separator . 'viewFragments', 'admin/model/catalog/*/after'=>self::FM_ROUTE . $separator . 'invalidate', 'admin/model/setting/*/after'=>self::FM_ROUTE . $separator . 'invalidate', 'admin/model/design/*/after'=>self::FM_ROUTE . $separator . 'invalidate', 'admin/model/journal3/*/after'=>self::FM_ROUTE . $separator . 'invalidate', 'catalog/model/checkout/order/*/after'=>self::FM_ROUTE . $separator . 'invalidate', 'catalog/model/checkout/order.*/after'=>self::FM_ROUTE . $separator . 'invalidate');
         if (!$v4) { $list['catalog/model/catalog/*/before']=self::FM_ROUTE . '/modelBefore'; $list['catalog/model/catalog/*/after']=self::FM_ROUTE . '/modelAfter'; }
         foreach ($list as $trigger=>$action) {
             if ($v4) { $events->addEvent(array('code'=>'furmedia_cache','description'=>'SkyNova Cache Suite','trigger'=>$trigger,'action'=>$action,'status'=>1,'sort_order'=>10000)); }

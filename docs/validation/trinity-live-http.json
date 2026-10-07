@@ -1,0 +1,589 @@
+{
+    "checked_at_utc": "2026-10-07T22:07:14+00:00",
+    "mode": "session",
+    "scope": "public guest sessions; mobile user agents; no account/order/payment",
+    "checks": [
+        {
+            "name": "android home 0",
+            "passed": true
+        },
+        {
+            "name": "android home 1",
+            "passed": true
+        },
+        {
+            "name": "android home 2",
+            "passed": true
+        },
+        {
+            "name": "android home 3",
+            "passed": true
+        },
+        {
+            "name": "android repeated home HIT",
+            "passed": false
+        },
+        {
+            "name": "android2 home 0",
+            "passed": true
+        },
+        {
+            "name": "fresh second Android does not reuse first visitor HTML",
+            "passed": true
+        },
+        {
+            "name": "android2 home 1",
+            "passed": true
+        },
+        {
+            "name": "android2 home 2",
+            "passed": true
+        },
+        {
+            "name": "android2 home 3",
+            "passed": true
+        },
+        {
+            "name": "android2 repeated home HIT",
+            "passed": false
+        },
+        {
+            "name": "iphone home 0",
+            "passed": true
+        },
+        {
+            "name": "iphone home 1",
+            "passed": true
+        },
+        {
+            "name": "iphone home 2",
+            "passed": true
+        },
+        {
+            "name": "iphone home 3",
+            "passed": true
+        },
+        {
+            "name": "iphone repeated home HIT",
+            "passed": false
+        },
+        {
+            "name": "desktop home 0",
+            "passed": true
+        },
+        {
+            "name": "desktop home 1",
+            "passed": true
+        },
+        {
+            "name": "desktop home 2",
+            "passed": true
+        },
+        {
+            "name": "desktop home 3",
+            "passed": true
+        },
+        {
+            "name": "desktop repeated home HIT",
+            "passed": false
+        },
+        {
+            "name": "public page renders index.php?route=product/category&path=64 0",
+            "passed": false
+        },
+        {
+            "name": "public page renders index.php?route=product/category&path=64 1",
+            "passed": false
+        },
+        {
+            "name": "public page renders index.php?route=product/category&path=64 2",
+            "passed": false
+        },
+        {
+            "name": "public page renders index.php?route=product/product&product_id=6624 0",
+            "passed": true
+        },
+        {
+            "name": "public page renders index.php?route=product/product&product_id=6624 1",
+            "passed": true
+        },
+        {
+            "name": "public page renders index.php?route=product/product&product_id=6624 2",
+            "passed": true
+        },
+        {
+            "name": "public page renders index.php?route=product/category&path=64&sort=p.price&order=ASC 0",
+            "passed": false
+        },
+        {
+            "name": "public page renders index.php?route=product/category&path=64&sort=p.price&order=ASC 1",
+            "passed": false
+        },
+        {
+            "name": "public page renders index.php?route=product/category&path=64&sort=p.price&order=ASC 2",
+            "passed": true
+        },
+        {
+            "name": "public page renders index.php?route=product/search&search=ametist 0",
+            "passed": true
+        },
+        {
+            "name": "public page renders index.php?route=product/search&search=ametist 1",
+            "passed": true
+        },
+        {
+            "name": "public page renders index.php?route=product/search&search=ametist 2",
+            "passed": true
+        },
+        {
+            "name": "AJAX bypass",
+            "passed": true
+        },
+        {
+            "name": "unknown query bypass",
+            "passed": true
+        },
+        {
+            "name": "cart excluded",
+            "passed": true
+        },
+        {
+            "name": "login excluded",
+            "passed": true
+        },
+        {
+            "name": "guest test cart add succeeds",
+            "passed": true
+        },
+        {
+            "name": "cart remains native",
+            "passed": true
+        },
+        {
+            "name": "own cart contains chosen product",
+            "passed": true
+        },
+        {
+            "name": "nonempty cart home bypass",
+            "passed": true
+        },
+        {
+            "name": "second Android cart does not contain removal control",
+            "passed": true
+        },
+        {
+            "name": "checkout renders without order/payment",
+            "passed": true
+        },
+        {
+            "name": "test cart cleaned",
+            "passed": true
+        },
+        {
+            "name": "unknown product does not produce server error",
+            "passed": true
+        }
+    ],
+    "requests": [
+        {
+            "session": "android",
+            "path": "index.php?route=common/home",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-response",
+            "ms": 1637,
+            "bytes": 557788,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=common/home",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-response",
+            "ms": 1618,
+            "bytes": 557788,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=common/home",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-response",
+            "ms": 1681,
+            "bytes": 557788,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=common/home",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-response",
+            "ms": 1516,
+            "bytes": 557788,
+            "error": ""
+        },
+        {
+            "session": "android2",
+            "path": "index.php?route=common/home",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-response",
+            "ms": 1593,
+            "bytes": 557788,
+            "error": ""
+        },
+        {
+            "session": "android2",
+            "path": "index.php?route=common/home",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-response",
+            "ms": 1696,
+            "bytes": 557788,
+            "error": ""
+        },
+        {
+            "session": "android2",
+            "path": "index.php?route=common/home",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-response",
+            "ms": 1446,
+            "bytes": 557788,
+            "error": ""
+        },
+        {
+            "session": "android2",
+            "path": "index.php?route=common/home",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-response",
+            "ms": 1588,
+            "bytes": 557788,
+            "error": ""
+        },
+        {
+            "session": "iphone",
+            "path": "index.php?route=common/home",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-response",
+            "ms": 1584,
+            "bytes": 557796,
+            "error": ""
+        },
+        {
+            "session": "iphone",
+            "path": "index.php?route=common/home",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-response",
+            "ms": 1619,
+            "bytes": 557796,
+            "error": ""
+        },
+        {
+            "session": "iphone",
+            "path": "index.php?route=common/home",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-response",
+            "ms": 1569,
+            "bytes": 557796,
+            "error": ""
+        },
+        {
+            "session": "iphone",
+            "path": "index.php?route=common/home",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-response",
+            "ms": 1435,
+            "bytes": 557796,
+            "error": ""
+        },
+        {
+            "session": "desktop",
+            "path": "index.php?route=common/home",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-response",
+            "ms": 3158,
+            "bytes": 905279,
+            "error": ""
+        },
+        {
+            "session": "desktop",
+            "path": "index.php?route=common/home",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-response",
+            "ms": 3045,
+            "bytes": 905279,
+            "error": ""
+        },
+        {
+            "session": "desktop",
+            "path": "index.php?route=common/home",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-response",
+            "ms": 3518,
+            "bytes": 905279,
+            "error": ""
+        },
+        {
+            "session": "desktop",
+            "path": "index.php?route=common/home",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-response",
+            "ms": 3574,
+            "bytes": 905279,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=product/category&path=64",
+            "method": "GET",
+            "status": 0,
+            "cache": "none",
+            "ms": 20003,
+            "bytes": 0,
+            "error": "Operation timed out after 20002 milliseconds with 0 bytes received"
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=product/category&path=64",
+            "method": "GET",
+            "status": 0,
+            "cache": "none",
+            "ms": 20002,
+            "bytes": 0,
+            "error": "Operation timed out after 20002 milliseconds with 0 bytes received"
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=product/category&path=64",
+            "method": "GET",
+            "status": 0,
+            "cache": "none",
+            "ms": 20002,
+            "bytes": 0,
+            "error": "Operation timed out after 20002 milliseconds with 0 bytes received"
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=product/product&product_id=6624",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-response",
+            "ms": 2688,
+            "bytes": 653659,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=product/product&product_id=6624",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-response",
+            "ms": 2627,
+            "bytes": 653659,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=product/product&product_id=6624",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-response",
+            "ms": 2578,
+            "bytes": 653659,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=product/category&path=64&sort=p.price&order=ASC",
+            "method": "GET",
+            "status": 0,
+            "cache": "none",
+            "ms": 20002,
+            "bytes": 0,
+            "error": "Operation timed out after 20002 milliseconds with 0 bytes received"
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=product/category&path=64&sort=p.price&order=ASC",
+            "method": "GET",
+            "status": 0,
+            "cache": "none",
+            "ms": 20002,
+            "bytes": 0,
+            "error": "Operation timed out after 20002 milliseconds with 0 bytes received"
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=product/category&path=64&sort=p.price&order=ASC",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-size",
+            "ms": 19988,
+            "bytes": 4485933,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=product/search&search=ametist",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-route",
+            "ms": 8779,
+            "bytes": 1213202,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=product/search&search=ametist",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-route",
+            "ms": 7466,
+            "bytes": 1213202,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=product/search&search=ametist",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-route",
+            "ms": 7539,
+            "bytes": 1213202,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=common/home",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-private-request",
+            "ms": 1563,
+            "bytes": 567202,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=common/home&probe_unknown=1",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-query",
+            "ms": 1840,
+            "bytes": 567202,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=checkout/cart",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-sensitive-route",
+            "ms": 564,
+            "bytes": 302896,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=account/login",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-sensitive-route",
+            "ms": 546,
+            "bytes": 316327,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=checkout/cart/add",
+            "method": "POST",
+            "status": 200,
+            "cache": "BYPASS-method",
+            "ms": 173,
+            "bytes": 1502,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=checkout/cart",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-private-customer",
+            "ms": 610,
+            "bytes": 345288,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=common/home",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-private-customer",
+            "ms": 1655,
+            "bytes": 569419,
+            "error": ""
+        },
+        {
+            "session": "android2",
+            "path": "index.php?route=checkout/cart",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-sensitive-route",
+            "ms": 559,
+            "bytes": 302896,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=checkout/checkout",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-private-customer",
+            "ms": 532,
+            "bytes": 340096,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=checkout/cart/remove",
+            "method": "POST",
+            "status": 200,
+            "cache": "BYPASS-method",
+            "ms": 104,
+            "bytes": 91,
+            "error": ""
+        },
+        {
+            "session": "android",
+            "path": "index.php?route=checkout/cart",
+            "method": "GET",
+            "status": 200,
+            "cache": "BYPASS-sensitive-route",
+            "ms": 827,
+            "bytes": 302896,
+            "error": ""
+        },
+        {
+            "session": "android2",
+            "path": "index.php?route=product/product&product_id=2147483647",
+            "method": "GET",
+            "status": 404,
+            "cache": "BYPASS-response",
+            "ms": 567,
+            "bytes": 309135,
+            "error": ""
+        }
+    ]
+}

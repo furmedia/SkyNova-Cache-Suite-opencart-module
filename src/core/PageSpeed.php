@@ -1,6 +1,9 @@
 <?php
 namespace FurMedia\Cache;
 class PageSpeed {
+    private $fetch;
+    private $directory;
+    public function __construct($fetch=null,$directory=null){$this->fetch=$fetch;$this->directory=$directory;}
     public function analyze($storeUrl,$strategy='mobile',$storeId=0) {
         if (!in_array($strategy,array('mobile','desktop'),true)) { throw new \InvalidArgumentException('Invalid strategy'); }
         $target=parse_url($storeUrl);
@@ -8,7 +11,11 @@ class PageSpeed {
         $url='https://www.googleapis.com/pagespeedonline/v5/runPagespeed?category=performance&strategy='.$strategy.'&url='.rawurlencode($storeUrl);
         $apiKey=Vault::value('FURMEDIA_PAGESPEED_KEY',$storeId);
         if ($apiKey) { $url.='&key='.rawurlencode($apiKey); }
-        $response=(new HttpClient())->get($url,8388608,55);
+        $directory=$this->directory!==null?$this->directory:(defined('DIR_CACHE')?DIR_CACHE.'furmedia_cache-pagespeed-'.(int)$storeId:null);
+        $cache=$directory?new FileStore($directory):null;
+        if($cache && $cache->get('quota')){throw new \RuntimeException('Google PageSpeed: limita de cereri a fost depășită (HTTP 429). Reîncearcă după 5 minute sau configurează cheia API PageSpeed în Integrări externe. Raportul anterior este păstrat.');}
+        try{$response=$this->fetch?call_user_func($this->fetch,$url):(new HttpClient())->get($url,8388608,55);}
+        catch(\Exception $e){if(strpos($e->getMessage(),'HTTP 429')!==false){if($cache){$cache->set('quota',true,300);}throw new \RuntimeException('Google PageSpeed: limita de cereri a fost depășită (HTTP 429). Reîncearcă după 5 minute sau configurează cheia API PageSpeed în Integrări externe. Raportul anterior este păstrat.');}throw $e;}
         $data=json_decode($response['body'],true);
         if (!isset($data['lighthouseResult']['categories']['performance']['score'])) { throw new \RuntimeException('PageSpeed returned no performance report'); }
         return $this->report($data['lighthouseResult'],$storeUrl,$strategy);

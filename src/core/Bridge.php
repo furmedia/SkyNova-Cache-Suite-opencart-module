@@ -42,6 +42,26 @@ class Bridge {
     }
 
     private function get($key) { return $this->registry->get($key); }
+    public function viewFragments($route,&$data){
+        if(!$this->shared || $this->hit || !$this->registry->has('journal3') || !is_array($data) || !isset($data['header'],$data['footer']) || !is_string($data['header']) || !is_string($data['footer'])){return;}
+        if($route!==$this->route && $route!=='journal3/'.$this->route){return;}
+        foreach(array('header','footer') as $name){if(strpos($data[$name],'data-skynova-fragment')!==false){return;}}
+        foreach(array('header','footer') as $name){$data[$name]=SharedPage::marker($name.'-start').$data[$name].SharedPage::marker($name.'-end');}
+        $this->fragments['_marked']=true;
+    }
+    /** Explicit Journal filter instances superseded by an active AFS installation. */
+    public function skipDuplicateFilter($route,$args){
+        if(!$this->settings['status'] || $this->settings['mode']==='observe' || $route!=='journal3/filter' || !$this->registry->has('journal3') || version_compare(VERSION,'4.0.0.0','>=') || !is_array($args)){return false;}
+        $id=isset($args['module_id'])?(string)(int)$args['module_id']:'';
+        if($id==='' || !in_array($id,Settings::lines($this->settings['journal_filter_ids']),true)){return false;}
+        $config=$this->get('config');if($config->get('module_ai_filter_suite_status')){return true;}
+        if(!defined('DIR_SYSTEM') || !is_file(DIR_SYSTEM.'library/ai_filter_suite.php')){return false;}
+        require_once DIR_SYSTEM.'library/ai_filter_suite.php';
+        if(!class_exists('AfsEngine',false)){return false;}
+        $query=$this->get('request')->get;$category=isset($query['path'])?explode('_',(string)$query['path']):array();$category=$category?(int)end($category):0;
+        $afs=(new \AfsEngine($this->registry))->panelSettings((int)$config->get('config_store_id'),(int)$config->get('config_language_id'),$category);
+        return !empty($afs['enabled']) && isset($afs['journal_mode']) && $afs['journal_mode']==='integrated';
+    }
     private function context() {
         $config = $this->get('config'); $session = $this->get('session');
         $customer = $this->get('customer'); $cart = $this->get('cart');
@@ -198,8 +218,8 @@ class Bridge {
     }
 
     public function after($route) {
-        try { $this->writePage($route); $this->deliver($route); }
-        finally { if($route===$this->route && $this->settings['litespeed']){$current=$this->context();if($current!==$this->context){$this->get('response')->addHeader(Litespeed::purge());$this->get('response')->addHeader('X-LiteSpeed-Cache-Control: no-cache');}$this->litespeedState($current);}if ($route===$this->route && $this->sql) { $this->sql->disable(); } if ($route===$this->route && is_resource($this->lease)) { flock($this->lease,LOCK_UN);fclose($this->lease);$this->lease=null; } }
+        try { $this->writePage($route);if($route===$this->route){$this->get('response')->setOutput(SharedPage::stripMarkers($this->get('response')->getOutput()));} $this->deliver($route); }
+        finally { if($route===$this->route){$this->get('response')->setOutput(SharedPage::stripMarkers($this->get('response')->getOutput()));}if($route===$this->route && $this->settings['litespeed']){$current=$this->context();if($current!==$this->context){$this->get('response')->addHeader(Litespeed::purge());$this->get('response')->addHeader('X-LiteSpeed-Cache-Control: no-cache');}$this->litespeedState($current);}if ($route===$this->route && $this->sql) { $this->sql->disable(); } if ($route===$this->route && is_resource($this->lease)) { flock($this->lease,LOCK_UN);fclose($this->lease);$this->lease=null; } }
     }
 
     public function __destruct() { if (is_resource($this->lease)) { flock($this->lease,LOCK_UN);fclose($this->lease); } }
@@ -228,16 +248,19 @@ class Bridge {
             $this->get('response')->addHeader('Cache-Control: private, no-store');$this->get('response')->addHeader('Vary: Cookie, Accept, Accept-Encoding');return;
         }
         $session=$this->get('session');$nativeCustomerToken=!$this->shared && !empty($this->context['customer']) && isset($session->data['customer_token']) && is_string($session->data['customer_token'])?$session->data['customer_token']:null;
-        if (!(new Policy())->responseAllowed($body,$admissionHeaders,$status,(bool)$this->settings['cache_404'],$nativeCustomerToken)) { $this->diagnostic('BYPASS-response'); return; }
         if($status===404 && $this->shared){$this->diagnostic('BYPASS-shared-404');return;}
         $session=$this->get('session');
-        if($this->shared && method_exists($session,'getId') && strlen($session->getId())>=8 && strpos($body,$session->getId())!==false){$this->diagnostic('BYPASS-session-in-body');return;}
-        $shared=$this->shared ? SharedPage::pack($body,$this->fragments,$this->get('document')) : null;
-        if ($this->shared && !$shared) { $this->diagnostic('BYPASS-fragments');return; }
+        $minifier=null;if($this->registry->has('journal3') && class_exists('Journal3\\Utils\\Min')){$journalDefer=(bool)$this->get('journal3')->get('performanceJSDefer');$journalMin=(bool)$this->get('journal3')->get('performanceHTMLMinify');$minifier=function($fragment)use($journalDefer,$journalMin){if($journalMin){$fragment=\Journal3\Utils\Min::minifyHTML($fragment);}return $journalDefer?str_replace('<script type="text/javascript"','<script type="text/javascript/defer"',$fragment):$fragment;};}
+        $fragmentReason='';$shared=$this->shared ? SharedPage::pack($body,$this->fragments,$this->get('document'),$fragmentReason,$minifier) : null;
+        if ($this->shared && !$shared) { $this->diagnostic('BYPASS-fragments'.($fragmentReason?'-'.$fragmentReason:''));return; }
+        $admissionBody=$shared?$shared['shell'].'</html>':$body;
+        if (!(new Policy())->responseAllowed($admissionBody,$admissionHeaders,$status,(bool)$this->settings['cache_404'],$nativeCustomerToken)) { $this->diagnostic('BYPASS-response'); return; }
+        if($shared && method_exists($session,'getId') && strlen($session->getId())>=8 && strpos($admissionBody,$session->getId())!==false){$this->diagnostic('BYPASS-session-in-body');return;}
         $body=$this->optimizeBody($body);
         $this->get('response')->setOutput($body);
         if ($this->settings['gzip'] && Delivery::gzipAllowed(isset($this->get('request')->server['HTTP_ACCEPT_ENCODING'])?$this->get('request')->server['HTTP_ACCEPT_ENCODING']:'')) { $this->get('response')->setCompression(6); }
-        if ($this->context() !== $this->context) { $this->diagnostic('BYPASS-state-change'); return; }
+        $currentContext=$this->context();
+        if ($shared ? (!SharedPage::eligible($this->registry,$this->request,$this->settings) || SharedPage::context($currentContext)!==SharedPage::context($this->context)) : $currentContext!==$this->context) { $this->diagnostic('BYPASS-state-change'); return; }
         $safe = array();
         foreach ($headers as $header) { if (preg_match('/^(Content-Type|Content-Language|Link):/i',$header)) { $safe[] = $header; } }
         $tags = array('catalog','route:' . $route);
@@ -359,7 +382,7 @@ class Bridge {
     }
 
     public function modelBefore($route, $args) {
-        if (!$this->settings['status'] || !$this->settings['model_cache'] || $this->settings['mode'] !== 'session' || version_compare(VERSION,'4.0.0.0','>=')) { return null; }
+        if (!$this->settings['status'] || !$this->settings['model_cache'] || $this->settings['mode'] === 'observe' || version_compare(VERSION,'4.0.0.0','>=')) { return null; }
         // Explicitly bounded read-only methods, no generic SQL interception.
         $safe = array('catalog/category/getCategory','catalog/category/getCategories','catalog/information/getInformation','catalog/information/getInformations','catalog/manufacturer/getManufacturer','catalog/manufacturer/getManufacturers');
         if (!in_array($route,$safe,true) || !in_array($route,Settings::lines($this->settings['model_allow']),true)) { return null; }

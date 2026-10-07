@@ -1,0 +1,65 @@
+{
+  "checked_at_utc": "2026-10-07T22:06:13Z",
+  "tests": [
+    {
+      "test": "shared_http.py",
+      "platform": "OC3",
+      "exit": 0,
+      "stdout": "PASS 12 shared-page HTTP checks\n"
+    },
+    {
+      "test": "multistore_http.py",
+      "platform": "OC3",
+      "exit": 0,
+      "stdout": "Isolated multistore fixture created\nIsolated fixture store removed\nPASS 4 multistore checks\n"
+    },
+    {
+      "test": "data_http.py",
+      "platform": "OC3",
+      "exit": 0,
+      "stdout": "PASS 23 data feature native HTTP checks\n"
+    },
+    {
+      "test": "completion_http.py",
+      "platform": "OC3",
+      "exit": 0,
+      "stdout": "PASS 73 completion native HTTP checks\n"
+    },
+    {
+      "test": "advanced_http.py",
+      "platform": "OC3",
+      "exit": 0,
+      "stdout": "PASS 15 advanced HTTP assertions OC3\n"
+    },
+    {
+      "test": "suite_http.py",
+      "platform": "OC3",
+      "exit": 0,
+      "stdout": "PASS 17 suite HTTP assertions OC3\n"
+    },
+    {
+      "test": "data_http.py",
+      "platform": "OC4",
+      "exit": 0,
+      "stdout": "PASS 23 data feature native HTTP checks\n"
+    },
+    {
+      "test": "completion_http.py",
+      "platform": "OC4",
+      "exit": 0,
+      "stdout": "PASS 73 completion native HTTP checks\n"
+    },
+    {
+      "test": "advanced_http.py",
+      "platform": "OC4",
+      "exit": 0,
+      "stdout": "PASS 15 advanced HTTP assertions OC4\n"
+    },
+    {
+      "test": "suite_http.py",
+      "platform": "OC4",
+      "exit": 0,
+      "stdout": "PASS 17 suite HTTP assertions OC4\n"
+    }
+  ]
+}

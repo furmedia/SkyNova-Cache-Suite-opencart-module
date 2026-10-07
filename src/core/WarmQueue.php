@@ -76,7 +76,10 @@ class WarmQueue {
                 if($this->store->get('paused')===true){break;}
                 if ($ok+$failed >= $limit || microtime(true)-$start>20) { break; }
                 $job=$state['jobs'][$key];
-                if ($job['due']>$now) { continue; }
+                // Manual warming may refresh completed pages immediately after a purge.
+                // Failed jobs keep their backoff; sitemap polling and CRON stay scheduled.
+                $force=!empty($config['force']) && $job['type']==='page' && $job['done'] && !$job['attempts'];
+                if ($job['due']>$now && !$force) { continue; }
                 if ($job['done']) { $job['attempts']=0;$job['done']=false; }
                 try {
                     $result=call_user_func($this->fetch,$job['url'],isset($job['headers'])?$job['headers']:array());
